@@ -501,4 +501,24 @@
     <string name="ftms_power_plus">+5 Вт</string>
     <string name="ftms_res_minus">-5%</string>
     <string name="ftms_res_plus">+5%</string>
+
+    <!-- Отправка тренировки на часы -->
+    <string name="watch_card_title">Отправить на часы</string>
+    <string name="watch_card_subtitle">Показывает сводку последней завершённой тренировки уведомлением, которое отображается на подключённых умных часах.</string>
+    <string name="watch_send">Отправить на часы</string>
+    <string name="watch_sending">Отправка…</string>
+    <string name="watch_sent">Отправлено — проверьте уведомление на часах</string>
+    <string name="watch_no_workout">Нет завершённых тренировок для отправки</string>
+    <string name="watch_permission_needed">Разрешите уведомления, чтобы отправлять данные тренировки на часы</string>
+    <string name="watch_error_fmt">Не удалось отправить: %1$s</string>
+    <string name="watch_last_fmt">Последняя тренировка: %1$s · %2$.2f км</string>
+    <string name="watch_channel_name">Тренировка на часах</string>
+    <string name="watch_channel_description">Уведомления со сводкой тренировки для подключённых умных часов</string>
+    <string name="watch_notification_title">BikeGrid · тренировка</string>
+    <string name="watch_summary_distance_fmt">Дистанция %1$.2f км</string>
+    <string name="watch_summary_time_fmt">Время %1$s</string>
+    <string name="watch_summary_speed_fmt">Ср. скорость %1$.1f км/ч</string>
+    <string name="watch_summary_hr_fmt">Ср. пульс %1$d уд/мин</string>
+    <string name="watch_summary_calories_fmt">Калории %1$d ккал</string>
+    <string name="watch_summary_power_fmt">Ср. мощность %1$d Вт</string>
 </resources>

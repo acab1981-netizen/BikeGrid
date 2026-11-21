@@ -15,6 +15,7 @@ import com.example.bike_.data.settings.CyclingSettings
 import com.example.bike_.data.tracking.RouteStateHolder
 import com.example.bike_.data.tracking.SimulatorStateHolder
 import com.example.bike_.data.tracking.WorkoutStateHolder
+import com.example.bike_.data.watch.WatchSyncManager
 import com.example.bike_.data.workout.StructuredWorkoutStore
 
 class BikeApplication : Application() {
@@ -40,6 +41,8 @@ class BikeApplication : Application() {
     lateinit var backupManager: BackupManager
         private set
     lateinit var healthConnectManager: HealthConnectManager
+        private set
+    lateinit var watchSyncManager: WatchSyncManager
         private set
 
     override fun onCreate() {
@@ -73,6 +76,7 @@ class BikeApplication : Application() {
 
         workoutRepository = WorkoutRepository(applicationContext, database)
         healthConnectManager = HealthConnectManager(applicationContext, workoutRepository, cyclingSettings)
+        watchSyncManager = WatchSyncManager(applicationContext, workoutRepository)
         backupManager = BackupManager(applicationContext, database, cyclingSettings)
         structuredWorkoutStore = StructuredWorkoutStore(applicationContext)
         routeRepository = RouteRepository(database)

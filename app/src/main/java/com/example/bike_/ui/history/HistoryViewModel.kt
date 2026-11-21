@@ -12,6 +12,7 @@ import com.example.bike_.data.db.entity.TrackPointEntity
 import com.example.bike_.data.db.entity.WorkoutEntity
 import com.example.bike_.data.export.ExportFormat
 import com.example.bike_.data.repository.WorkoutRepository
+import com.example.bike_.data.watch.WatchSyncManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,6 +25,7 @@ import kotlinx.coroutines.launch
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
     private val repo: WorkoutRepository = (application as BikeApplication).workoutRepository
     private val backupManager: BackupManager = (application as BikeApplication).backupManager
+    private val watchSyncManager: WatchSyncManager = (application as BikeApplication).watchSyncManager
 
     val workouts: StateFlow<List<WorkoutEntity>> = repo.observeWorkouts()
         .map { list -> list.filter { it.isFinished } }
@@ -34,6 +36,9 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
 
     private val _restoreState = MutableStateFlow<RestoreUiState>(RestoreUiState.Idle)
     val restoreState: StateFlow<RestoreUiState> = _restoreState.asStateFlow()
+
+    private val _watchState = MutableStateFlow<WatchUiState>(WatchUiState.Idle)
+    val watchState: StateFlow<WatchUiState> = _watchState.asStateFlow()
 
     fun observeWorkout(id: Long): Flow<WorkoutEntity?> = repo.observeWorkout(id)
 
@@ -87,6 +92,39 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun sendToWatch() {
+        viewModelScope.launch {
+            _watchState.value = WatchUiState.InProgress
+            try {
+                when (val result = watchSyncManager.sendLastWorkout()) {
+                    is WatchSyncManager.SendResult.Success -> _watchState.value = WatchUiState.Sent
+                    WatchSyncManager.SendResult.NoWorkout -> _watchState.value = WatchUiState.Error(
+                        getApplication<Application>().getString(com.example.bike_.R.string.watch_no_workout)
+                    )
+                    WatchSyncManager.SendResult.PermissionsNeeded -> _watchState.value = WatchUiState.Error(
+                        getApplication<Application>().getString(com.example.bike_.R.string.watch_permission_needed)
+                    )
+                    is WatchSyncManager.SendResult.Error -> _watchState.value = WatchUiState.Error(
+                        getApplication<Application>().getString(com.example.bike_.R.string.watch_error_fmt, result.message)
+                    )
+                }
+            } catch (e: Exception) {
+                _watchState.value = WatchUiState.Error(
+                    getApplication<Application>().getString(
+                        com.example.bike_.R.string.watch_error_fmt,
+                        e.message ?: getApplication<Application>().getString(com.example.bike_.R.string.unknown_error)
+                    )
+                )
+            }
+        }
+    }
+
+    fun watchPermissionDenied() {
+        _watchState.value = WatchUiState.Error(
+            getApplication<Application>().getString(com.example.bike_.R.string.watch_permission_needed)
+        )
+    }
+
     fun consumeBackup() { _backupState.value = BackupUiState.Idle }
     fun consumeRestore() { _restoreState.value = RestoreUiState.Idle }
 
@@ -102,6 +140,13 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
         data object InProgress : RestoreUiState
         data class Success(val workoutCount: Int) : RestoreUiState
         data class Error(val message: String) : RestoreUiState
+    }
+
+    sealed interface WatchUiState {
+        data object Idle : WatchUiState
+        data object InProgress : WatchUiState
+        data object Sent : WatchUiState
+        data class Error(val message: String) : WatchUiState
     }
 }
 

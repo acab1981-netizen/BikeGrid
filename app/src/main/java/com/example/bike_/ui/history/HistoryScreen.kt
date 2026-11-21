@@ -1,6 +1,9 @@
 package com.example.bike_.ui.history
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -41,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.bike_.R
@@ -61,11 +67,28 @@ fun HistoryScreen(
     val workouts by viewModel.workouts.collectAsStateWithLifecycle()
     val backupState by viewModel.backupState.collectAsStateWithLifecycle()
     val restoreState by viewModel.restoreState.collectAsStateWithLifecycle()
+    val watchState by viewModel.watchState.collectAsStateWithLifecycle()
     var workoutToDelete by remember { mutableStateOf<WorkoutEntity?>(null) }
     var pendingRestoreUri by remember { mutableStateOf<Uri?>(null) }
 
     val restorePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
         if (uri != null) pendingRestoreUri = uri
+    }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) viewModel.sendToWatch() else viewModel.watchPermissionDenied()
+    }
+
+    fun requestWatchSend() {
+        val canPost = Build.VERSION.SDK_INT < 33 ||
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+        if (canPost) {
+            viewModel.sendToWatch()
+        } else {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     LaunchedEffect(backupState) {
@@ -107,6 +130,13 @@ fun HistoryScreen(
     Column(modifier = modifier.fillMaxSize().background(palette.screenBg).padding(16.dp)) {
         Text(stringResource(R.string.history_title), fontSize = 17.sp, fontWeight = FontWeight.Bold, color = palette.textPrimary)
         Spacer(Modifier.height(8.dp))
+
+        WatchCard(
+            lastWorkout = workouts.firstOrNull(),
+            state = watchState,
+            onSend = ::requestWatchSend
+        )
+        Spacer(Modifier.height(12.dp))
 
         BackupCard(
             isBusy = backupState is HistoryViewModel.BackupUiState.InProgress ||
@@ -189,6 +219,70 @@ fun HistoryScreen(
                 TextButton(onClick = { pendingRestoreUri = null }) { Text(stringResource(R.string.cancel)) }
             }
         )
+    }
+}
+
+@Composable
+private fun WatchCard(
+    lastWorkout: WorkoutEntity?,
+    state: HistoryViewModel.WatchUiState,
+    onSend: () -> Unit
+) {
+    val palette = LocalBikeUiPalette.current
+    Card(
+        colors = CardDefaults.cardColors(containerColor = palette.cardBg),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(16.dp)).padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(stringResource(R.string.watch_card_title), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = palette.textPrimary)
+            Text(stringResource(R.string.watch_card_subtitle), fontSize = 12.sp, color = palette.textSecondary)
+            if (lastWorkout != null) {
+                Text(
+                    stringResource(
+                        R.string.watch_last_fmt,
+                        workoutTypeLabel(lastWorkout.workoutType),
+                        lastWorkout.distanceMeters / 1000.0
+                    ),
+                    fontSize = 12.sp,
+                    color = palette.textPrimary
+                )
+            }
+            Spacer(Modifier.height(2.dp))
+            Button(
+                onClick = onSend,
+                enabled = lastWorkout != null && state !is HistoryViewModel.WatchUiState.InProgress,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (state is HistoryViewModel.WatchUiState.InProgress) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        strokeWidth = 2.dp,
+                        color = palette.cardBg
+                    )
+                    Spacer(Modifier.size(8.dp))
+                    Text(stringResource(R.string.watch_sending), fontSize = 12.sp)
+                } else {
+                    Text(stringResource(R.string.watch_send), fontSize = 12.sp)
+                }
+            }
+            when (state) {
+                is HistoryViewModel.WatchUiState.Sent -> Text(
+                    stringResource(R.string.watch_sent),
+                    fontSize = 12.sp,
+                    color = palette.accent
+                )
+                is HistoryViewModel.WatchUiState.Error -> Text(
+                    state.message,
+                    fontSize = 12.sp,
+                    color = palette.danger
+                )
+                else -> Unit
+            }
+        }
     }
 }
 

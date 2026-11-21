@@ -514,5 +514,25 @@
     <string name="ftms_power_plus">+5 W</string>
     <string name="ftms_res_minus">-5%</string>
     <string name="ftms_res_plus">+5%</string>
+
+    <!-- Send workout to watch -->
+    <string name="watch_card_title">Send to watch</string>
+    <string name="watch_card_subtitle">Shows a summary of your last completed workout as a notification that your paired smartwatch can display.</string>
+    <string name="watch_send">Send to watch</string>
+    <string name="watch_sending">Sending…</string>
+    <string name="watch_sent">Sent — check the notification on your watch</string>
+    <string name="watch_no_workout">No completed workouts to send</string>
+    <string name="watch_permission_needed">Allow notifications to send workout data to your watch</string>
+    <string name="watch_error_fmt">Could not send: %1$s</string>
+    <string name="watch_last_fmt">Last workout: %1$s · %2$.2f km</string>
+    <string name="watch_channel_name">Workout on watch</string>
+    <string name="watch_channel_description">Workout summary notifications shown on paired smartwatches</string>
+    <string name="watch_notification_title">BikeGrid · workout</string>
+    <string name="watch_summary_distance_fmt">Distance %1$.2f km</string>
+    <string name="watch_summary_time_fmt">Time %1$s</string>
+    <string name="watch_summary_speed_fmt">Avg speed %1$.1f km/h</string>
+    <string name="watch_summary_hr_fmt">Avg HR %1$d bpm</string>
+    <string name="watch_summary_calories_fmt">Calories %1$d kcal</string>
+    <string name="watch_summary_power_fmt">Avg power %1$d W</string>
 </resources>
 
