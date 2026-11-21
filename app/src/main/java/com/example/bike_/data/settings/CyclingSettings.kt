@@ -252,8 +252,6 @@ class CyclingSettings(context: Context) {
             val out = ArrayList<KnownSensorPref>(arr.length())
             for (i in 0 until arr.length()) {
                 val o = arr.optJSONObject(i) ?: continue
-                val transport = o.optString("transport", "BLE")
-                if (transport == "ANT_PLUS") continue
                 val id = o.optString("id").takeIf { it.isNotBlank() } ?: o.optString("address").takeIf { it.isNotBlank() } ?: continue
                 val address = o.optString("address", id).ifBlank { id }
                 val typesArr = o.optJSONArray("sensorTypes") ?: JSONArray()

@@ -87,16 +87,9 @@
         android:name="android.hardware.sensor.stepdetector"
         android:required="false" />
 
-    <!-- ANT+ Plugins (optional; checked at runtime) -->
+    <!-- Health Connect is queried explicitly so availability checks work on Android 11+. -->
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
-        <package android:name="com.dsi.ant.plugins.antplus" />
-        <package android:name="com.dsi.ant.service.socket" />
-        <package android:name="com.dsi.ant.server" />
-        <package android:name="com.dsi.ant.usbservice" />
-        <intent>
-            <action android:name="com.dsi.ant.plugins.antplus.intent.action.REQUEST_ACCESS" />
-        </intent>
     </queries>
 
     <application

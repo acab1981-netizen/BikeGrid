@@ -71,7 +71,7 @@ class BikeApplication : Application() {
             BikeDatabase::class.java,
             "bike_workouts.db"
         ).addMigrations(BikeDatabase.MIGRATION_5_6)
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
 
         workoutRepository = WorkoutRepository(applicationContext, database)

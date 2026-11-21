@@ -89,7 +89,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -1285,7 +1285,6 @@ private fun LiveMapCard(
             controller.setZoom(15.0)
             setBackgroundColor(android.graphics.Color.parseColor(if (palette.isDark) "#1B2027" else "#DDE3E8"))
             zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
-            setBuiltInZoomControls(false)
         }
     }
     val routePolyline = remember {

@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -231,7 +231,7 @@ private fun MainApp() {
                                         RootTab.Sensors -> Icons.Filled.Bluetooth
                                         RootTab.Computer -> Icons.Filled.Speed
                                         RootTab.History -> Icons.Filled.History
-                                        RootTab.Stats -> Icons.Filled.ShowChart
+                                        RootTab.Stats -> Icons.AutoMirrored.Filled.ShowChart
                                     },
                                     contentDescription = label
                                 )

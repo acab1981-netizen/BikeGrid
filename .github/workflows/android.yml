@@ -21,15 +21,20 @@ jobs:
       - name: Install required Android SDK packages
         run: |
           SDKMGR="$(command -v sdkmanager || true)"
-          if [ -z "$SDKMGR" ] && [ -n "$ANDROID_HOME" ]; then
-            SDKMGR="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ -z "$SDKMGR" ]; then
+            for root in "$ANDROID_HOME" "$ANDROID_SDK_ROOT" "$HOME/Android/Sdk"; do
+              if [ -n "$root" ] && [ -x "$root/cmdline-tools/latest/bin/sdkmanager" ]; then
+                SDKMGR="$root/cmdline-tools/latest/bin/sdkmanager"
+                break
+              fi
+            done
           fi
           if [ -z "$SDKMGR" ]; then
-            echo "sdkmanager not found; ANDROID_HOME=$ANDROID_HOME" >&2
+            echo "sdkmanager not found; ANDROID_HOME=$ANDROID_HOME ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >&2
             exit 1
           fi
           yes | "$SDKMGR" --licenses > /dev/null
-          "$SDKMGR" --install "platform-tools" "platforms;android-37" "build-tools;35.0.0"
+          "$SDKMGR" --install "platform-tools" "platforms;android-36" "build-tools;36.0.0"
 
       - uses: gradle/actions/setup-gradle@v4
 

@@ -1,18 +1,12 @@
 *.iml
 .gradle
+/.idea/
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
 .DS_Store
 /build
 /captures
 .externalNativeBuild
 .cxx
-local.properties
 
 # Release signing
 key.properties
@@ -20,8 +14,6 @@ android/key.properties
 *.jks
 *.keystore
 
-# Local build artifacts / scratch files
+# Local build artifacts
 /app/build
 /.kotlin
-/classes.jar
-/temp_strings.txt

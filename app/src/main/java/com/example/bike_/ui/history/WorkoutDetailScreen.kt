@@ -247,7 +247,7 @@ private fun RouteMap(points: List<TrackPointEntity>) {
     val app = context.applicationContext as BikeApplication
     val tileSourceKey by app.cyclingSettings.mapTileSource.collectAsStateWithLifecycle()
     val useNetwork by app.cyclingSettings.mapUseNetwork.collectAsStateWithLifecycle()
-    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val mapView = remember {
         AppMapConfig.ensureConfigured(context)
         MapView(context).apply {

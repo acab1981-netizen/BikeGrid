@@ -18,7 +18,7 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.example.bike_"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.mybike.computer"
@@ -28,9 +28,11 @@ android {
         versionName = "1.0.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 
-        // Languages packaged/available at install time (per-app language support)
-        resourceConfigurations += listOf("en", "ru")
+    // Languages packaged/available at install time (per-app language support)
+    androidResources {
+        localeFilters += listOf("en", "ru")
     }
 
     signingConfigs {
