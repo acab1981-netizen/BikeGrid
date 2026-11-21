@@ -1,0 +1,40 @@
+package com.example.bike_.data.ble
+
+import java.util.UUID
+
+object BleUuids {
+    // Services (Bluetooth SIG standard)
+    val HEART_RATE_SERVICE: UUID = uuid16(0x180D)
+    val CYCLING_SPEED_AND_CADENCE_SERVICE: UUID = uuid16(0x1816)
+    val CYCLING_POWER_SERVICE: UUID = uuid16(0x1818)
+    val RUNNING_SPEED_AND_CADENCE_SERVICE: UUID = uuid16(0x1814)
+    val BATTERY_SERVICE: UUID = uuid16(0x180F)
+    val FITNESS_MACHINE_SERVICE: UUID = uuid16(0x1826)
+
+    // Characteristics
+    val HEART_RATE_MEASUREMENT: UUID = uuid16(0x2A37)
+    val CSC_MEASUREMENT: UUID = uuid16(0x2A5B)
+    val RSC_MEASUREMENT: UUID = uuid16(0x2A53)
+    val CYCLING_POWER_MEASUREMENT: UUID = uuid16(0x2A63)
+    val BATTERY_LEVEL: UUID = uuid16(0x2A19)
+    val INDOOR_BIKE_DATA: UUID = uuid16(0x2AD2)
+    val FITNESS_MACHINE_CONTROL_POINT: UUID = uuid16(0x2AD9)
+    val FITNESS_MACHINE_STATUS: UUID = uuid16(0x2ADA)
+    val FITNESS_MACHINE_FEATURE: UUID = uuid16(0x2ACC)
+    val SUPPORTED_RESISTANCE_LEVEL_RANGE: UUID = uuid16(0x2AD6)
+    val SUPPORTED_POWER_RANGE: UUID = uuid16(0x2AD8)
+
+    // Descriptor
+    val CLIENT_CHARACTERISTIC_CONFIG: UUID = uuid16(0x2902)
+
+    val SUPPORTED_SERVICES: Set<UUID> = setOf(
+        HEART_RATE_SERVICE,
+        CYCLING_SPEED_AND_CADENCE_SERVICE,
+        CYCLING_POWER_SERVICE,
+        RUNNING_SPEED_AND_CADENCE_SERVICE,
+        FITNESS_MACHINE_SERVICE
+    )
+
+    fun uuid16(shortValue: Int): UUID =
+        UUID.fromString(String.format("0000%04X-0000-1000-8000-00805F9B34FB", shortValue))
+}

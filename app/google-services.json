@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "238751884886",
+    "project_id": "com-example-myapplicatio-4fcab",
+    "storage_bucket": "com-example-myapplicatio-4fcab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238751884886:android:a47023140eff2ec006fdf7",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhbG7VQqwFTsSQTkf7R9vvk4J-znNZv-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:238751884886:android:40e0a60ef6ae9b7e06fdf7",
+        "android_client_info": {
+          "package_name": "com.mybike.computer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhbG7VQqwFTsSQTkf7R9vvk4J-znNZv-Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

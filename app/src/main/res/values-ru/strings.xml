@@ -1,0 +1,504 @@
+<resources>
+    <string name="app_name">BikeGrid</string>
+
+    <!-- General -->
+    <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
+    <string name="delete">Удалить</string>
+    <string name="ok">ОК</string>
+    <string name="settings">Настройки</string>
+    <string name="back">Назад</string>
+    <string name="close">Закрыть</string>
+    <string name="continue_label">Продолжить</string>
+    <string name="done">Готово</string>
+    <string name="next">Далее</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+
+    <!-- Tabs -->
+    <string name="tab_sensors">Датчики</string>
+    <string name="tab_computer">Велокомпьютер</string>
+    <string name="tab_history">История</string>
+
+    <!-- Workout tracking foreground service -->
+    <string name="tracking_channel_name">Запись тренировки</string>
+    <string name="tracking_channel_description">Постоянное уведомление с временем и дистанцией во время тренировки</string>
+    <string name="tracking_notification_title">Тренировка</string>
+    <string name="tracking_notification_text">Идёт запись маршрута и метрик</string>
+    <string name="tracking_notification_time_distance">Время: %1$s · Дистанция: %2$s км</string>
+    <string name="tracking_state_tracking">Запись</string>
+    <string name="tracking_state_auto_paused">Пауза</string>
+    <string name="tracking_state_paused">Пауза</string>
+    <string name="tracking_state_stopped">Остановлено</string>
+    <string name="tracking_state_auto_paused_short">Пауза</string>
+    <string name="tracking_off_route_suffix"> · Сход с маршрута: %1$d м</string>
+
+    <!-- Route import -->
+    <string name="route_import_failed">Не удалось прочитать файл маршрута. Неверный или неподдерживаемый формат GPX/FIT.</string>
+    <string name="route_import_loaded">Маршрут загружен: %1$s (%2$d точек)</string>
+    <string name="route_import_default_name">Маршрут</string>
+    <string name="route_import_error">Ошибка импорта маршрута: %1$s</string>
+
+    <!-- Bike computer -->
+    <string name="bc_metrics">Данные</string>
+    <string name="bc_map">Карта</string>
+    <string name="bc_settings_view">Настройки и вид</string>
+    <string name="bc_offline_maps">Офлайн-карты</string>
+    <string name="bc_load_route">Загрузить маршрут GPX/FIT</string>
+    <string name="bc_load_gpx_fit">GPX/FIT</string>
+    <string name="bc_stop_workout_title">Завершить тренировку?</string>
+    <string name="bc_stop_workout_text">Запись будет остановлена, данные сохранятся в историю. Позже можно экспортировать GPX/TCX/FIT.</string>
+    <string name="bc_finish">Завершить</string>
+    <string name="bc_battery_title">Отключить оптимизацию батареи</string>
+    <string name="bc_battery_text">Для надёжной записи в фоне рекомендуется отключить оптимизацию батареи для Bike_. Иначе система может остановить GPS/BLE и запись при выключенном экране или во время длительной тренировки.</string>
+    <string name="bc_disable_optimization">Отключить оптимизацию</string>
+    <string name="bc_continue_without_changes">Продолжить без изменений</string>
+    <string name="bc_unfinished_title">Незавершённая тренировка</string>
+    <string name="bc_unfinished_text">Обнаружена незавершённая тренировка (%1$s, %2$s, %3$s, точек: %4$d).\n\nПриложение или устройство могли быть закрыты во время записи. Вы можете сохранить данные или продолжить тренировку.</string>
+    <string name="bc_speed">СКОРОСТЬ</string>
+    <string name="bc_kmh">км/ч</string>
+    <string name="bc_no_fields">Поля не выбраны</string>
+    <string name="bc_configure_fields">Настроить поля</string>
+    <string name="bc_laps_summary">Круги: %1$d · последний %2$s (%3$.2f км)</string>
+    <string name="bc_view_customize_title">Вид и настройка</string>
+    <string name="bc_theme">Тема</string>
+    <string name="bc_accent">Акцент</string>
+    <string name="bc_panels">Панели</string>
+    <string name="bc_start_on_map">Стартовый экран: карта</string>
+    <string name="bc_compact_cards">Компактные карточки</string>
+    <string name="bc_show_map_controls">Показывать элементы управления картой</string>
+    <string name="bc_auto_pause_enabled">Автопауза по скорости</string>
+    <string name="bc_auto_pause_enabled_hint">Ставить на паузу при низкой скорости и возобновлять автоматически</string>
+    <string name="bc_metric_fields">Поля показателей</string>
+    <string name="bc_metric_fields_hint">Скорость отображается всегда. Выберите дополнительные поля:</string>
+    <string name="bc_start">СТАРТ</string>
+    <string name="bc_pause">ПАУЗА</string>
+    <string name="bc_resume">ПРОДОЛЖИТЬ</string>
+    <string name="bc_lap">КРУГ</string>
+    <string name="bc_stop">СТОП</string>
+    <string name="bc_cycling">Велосипед</string>
+    <string name="bc_running">Бег</string>
+    <string name="bc_walking">Ходьба</string>
+    <string name="bc_remove_route">Убрать маршрут</string>
+    <string name="bc_route">Маршрут</string>
+    <string name="bc_track">Трек</string>
+    <string name="bc_off_route">Сход с маршрута: %1$d м (&gt;50 м)</string>
+    <string name="bc_waiting_gps">Ожидание GPS</string>
+    <string name="bc_map_hint_network">Тайлы карты загрузятся при наличии интернета.\nТрек появится после первых точек.</string>
+    <string name="bc_map_hint_offline">Режим только из кэша. Заранее загрузите область в «Офлайн-карты».\nТрек появится после первых точек.</string>
+    <string name="bc_loading">Загрузка…</string>
+    <string name="bc_route_loaded">Маршрут загружен</string>
+    <string name="bc_waiting_gps_track">Ожидание GPS для начала записи трека.</string>
+    <string name="bc_no_gps">Нет GPS</string>
+    <string name="bc_gps">GPS</string>
+    <string name="bc_ready">Готово</string>
+    <string name="bc_recording">Запись</string>
+    <string name="bc_auto_paused">Пауза</string>
+    <string name="unit_km">км</string>
+    <string name="unit_kmh">км/ч</string>
+    <string name="unit_m">м</string>
+    <string name="unit_bpm">уд/мин</string>
+    <string name="unit_rpm">об/мин</string>
+    <string name="unit_w">Вт</string>
+
+    <!-- Metrics -->
+    <string name="metric_distance">Дистанция</string>
+    <string name="metric_time">Время</string>
+    <string name="metric_moving_time">Время в движении</string>
+    <string name="metric_avg_speed">Средняя скорость</string>
+    <string name="metric_max_speed">Макс. скорость</string>
+    <string name="metric_heart_rate">Пульс</string>
+    <string name="metric_cadence">Каденс</string>
+    <string name="metric_power">Мощность</string>
+    <string name="metric_elevation">Набор высоты</string>
+    <string name="metric_lap">Текущий круг</string>
+
+    <!-- UI theme/accent labels -->
+    <string name="theme_soft">Мягкая</string>
+    <string name="theme_warm">Тёплая</string>
+    <string name="theme_cool">Холодная</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="accent_orange">Оранжевый</string>
+    <string name="accent_blue">Синий</string>
+    <string name="accent_green">Зелёный</string>
+    <string name="accent_teal">Бирюзовый</string>
+    <string name="accent_purple">Фиолетовый</string>
+
+    <!-- History -->
+    <string name="history_title">История</string>
+    <string name="history_empty_title">Пока нет завершённых тренировок.</string>
+    <string name="history_empty_subtitle">Начните запись на вкладке «Велокомпьютер», завершите её — и тренировка появится здесь.</string>
+    <string name="history_delete_title">Удалить тренировку?</string>
+    <string name="history_delete_text">Тренировка «%1$s» от %2$s и её трек будут удалены из истории. Ранее экспортированные файлы в «Загрузках» не удаляются автоматически.</string>
+    <string name="history_delete_cd">Удалить тренировку</string>
+    <string name="history_distance">Дистанция</string>
+    <string name="history_time">Время</string>
+    <string name="history_avg_speed">Ср. скорость</string>
+    <string name="history_avg_hr">Ср. пульс</string>
+    <string name="history_avg_power">Ср. мощность</string>
+    <string name="history_elevation">Набор</string>
+
+    <!-- Резервная копия / восстановление -->
+    <string name="backup_title">Бэкап и восстановление</string>
+    <string name="backup_subtitle">Сохраните все тренировки и настройки в один файл или восстановите их после переустановки приложения.</string>
+    <string name="backup_create">Создать бэкап</string>
+    <string name="backup_restore">Восстановить из файла</string>
+    <string name="backup_created">Бэкап сохранён: %1$s (%2$d тренировок)</string>
+    <string name="backup_restored">Восстановлено тренировок: %1$d</string>
+    <string name="backup_restore_confirm_title">Восстановить бэкап?</string>
+    <string name="backup_restore_confirm_text">Текущие тренировки, маршруты и настройки будут заменены данными из файла. Отменить это действие нельзя.</string>
+    <string name="backup_error_save">Не удалось сохранить файл бэкапа</string>
+    <string name="backup_restore_invalid">Некорректный или нечитаемый файл бэкапа</string>
+    <string name="backup_restore_error">Ошибка восстановления</string>
+
+    <!-- Workout detail -->
+    <string name="detail_title">Детали тренировки</string>
+    <string name="detail_route">Маршрут</string>
+    <string name="detail_no_gps_points">Нет GPS-точек для отображения.</string>
+    <string name="detail_summary">Сводка</string>
+    <string name="detail_total_time">Общее время</string>
+    <string name="detail_moving_time">Время в движении</string>
+    <string name="detail_distance">Дистанция</string>
+    <string name="detail_avg_speed">Средняя скорость</string>
+    <string name="detail_max_speed">Макс. скорость</string>
+    <string name="detail_elevation_gain">Набор высоты</string>
+    <string name="detail_hr_avg_max">Ср. / макс. пульс</string>
+    <string name="detail_cadence_avg_max">Ср. / макс. каденс</string>
+    <string name="detail_power_avg_max">Ср. / макс. мощность</string>
+    <string name="detail_no_chart_data">Недостаточно данных для графиков.</string>
+    <string name="detail_charts_by_distance">Графики по дистанции</string>
+    <string name="detail_no_series_data">Нет данных скорости/пульса/высоты для графиков.</string>
+    <string name="detail_export_share">Экспорт и отправка</string>
+    <string name="detail_exporting">Экспорт…</string>
+    <string name="detail_export_action">Скачать / Поделиться %1$s</string>
+    <string name="detail_saved">Сохранено: %1$s</string>
+    <string name="detail_export_hint">Файл сохраняется в «Загрузки/Bike_», после чего открывается меню отправки (Strava, Garmin, почта, файлы и т.д.).</string>
+    <string name="chart_speed">Скорость, км/ч</string>
+    <string name="chart_hr">Пульс, уд/мин</string>
+    <string name="chart_altitude">Высота, м</string>
+    <string name="chart_stats">мин %1$.1f · макс %2$.1f · дистанция %3$.2f км</string>
+
+    <!-- Sensors -->
+    <string name="sensors_title">Датчики</string>
+    <string name="sensors_subtitle">BLE-датчики: пульс, скорость/каденс, мощность. Подключённые устройства запоминаются и переподключаются автоматически. Скорость с датчика скорости/каденса или велостанка может использоваться при потере сигнала GPS.</string>
+    <string name="sensors_search">Поиск устройств</string>
+    <string name="sensors_stop_search">Остановить поиск</string>
+    <string name="sensors_wheel_setup">Настройка колеса</string>
+    <string name="sensors_wheel_label">Колесо (CSC): %1$.0f мм</string>
+    <string name="sensors_unfiltered_scan">Показывать все BLE-устройства</string>
+    <string name="sensors_unfiltered_scan_hint">Резервный режим для датчиков, которые не передают поддерживаемые сервисы в рекламе. Больше расход батареи и сторонние устройства в списке.</string>
+    <string name="sensors_connected">Подключённые датчики</string>
+    <string name="sensors_connected_empty">Нет активных подключений. Сохранённые устройства попробуют переподключиться автоматически.</string>
+    <string name="sensors_saved">Сохранённые устройства</string>
+    <string name="sensors_saved_empty">Пока нет сохранённых устройств. Подключите датчик один раз, чтобы запомнить его.</string>
+    <string name="sensors_saved_all_active">Все сохранённые устройства сейчас активны.</string>
+    <string name="sensors_found">Найденные устройства</string>
+    <string name="sensors_found_empty">Пока ничего не найдено. Нажмите «Поиск устройств».</string>
+    <string name="sensors_searching_ble">Идёт поиск BLE…</string>
+    <string name="sensors_wheel_title">Длина окружности колеса</string>
+    <string name="sensors_wheel_hint">Используется для расчёта скорости и дистанции по датчику скорости/каденса (в том числе велостанку, передающему скорость колеса). Введите значение в мм (например, 2096, 2105, 2325).</string>
+    <string name="sensors_mm">мм</string>
+    <string name="sensors_battery">Батарея: %1$d%%</string>
+    <string name="sensors_disconnect">Отключить</string>
+    <string name="sensors_last_connected">Последнее подключение: %1$s</string>
+    <string name="sensors_connect">Подключить</string>
+    <string name="sensors_forget">Забыть</string>
+    <string name="sensors_auto_on">Авто: вкл.</string>
+    <string name="sensors_auto_off">Авто: выкл.</string>
+    <string name="sensors_state_connected">Подключено</string>
+    <string name="sensors_state_connecting">Подключение</string>
+    <string name="sensors_state_disconnecting">Отключение</string>
+    <string name="sensors_state_disconnected">Отключено</string>
+    <string name="sensors_detecting">определение…</string>
+    <string name="sensors_type_hr">Пульс</string>
+    <string name="sensors_type_csc">Скорость/каденс</string>
+    <string name="sensors_type_power">Мощность</string>
+    <string name="sensors_unknown_name">Без имени</string>
+    <string name="sensors_saved_sensor">Сохранённый датчик</string>
+    <string name="sensors_ble_device">Устройство BLE</string>
+    <string name="sensors_rssi">RSSI: %1$d дБм</string>
+
+    <!-- Offline maps -->
+    <string name="offline_maps_title">Офлайн-карты</string>
+    <string name="offline_maps_layers">Слои/свойства</string>
+    <string name="offline_maps_layer">Слой карты</string>
+    <string name="offline_maps_use_network">Использовать сеть для тайлов</string>
+    <string name="offline_maps_use_network_hint">Выкл. = режим только из кэша (офлайн)</string>
+    <string name="offline_maps_area">Область загрузки</string>
+    <string name="offline_maps_rect">Прямоугольник (экран)</string>
+    <string name="offline_maps_radius">Радиус от точки</string>
+    <string name="offline_maps_radius_value">Радиус: %1$.1f км (нажмите на карту для выбора точки)</string>
+    <string name="offline_maps_my_location">Моё местоположение</string>
+    <string name="offline_maps_no_point">Точка не выбрана</string>
+    <string name="offline_maps_rect_hint">Будет загружена область, видимая на карте (прямоугольник).</string>
+    <string name="offline_maps_zoom">Зум загрузки: %1$d–%2$d</string>
+    <string name="offline_maps_min_zoom">Мин.: %1$d</string>
+    <string name="offline_maps_max_zoom">Макс.: %1$d</string>
+    <string name="offline_maps_refresh_frame">Обновить рамку</string>
+    <string name="offline_maps_downloading">Загрузка тайлов</string>
+    <string name="offline_maps_progress">%1$d / %2$d тайлов</string>
+    <string name="offline_maps_download">Загрузить %1$d–%2$d</string>
+    <string name="offline_maps_download_cancelled">Загрузка отменена</string>
+    <string name="offline_maps_invalid_zoom">Некорректный диапазон зума</string>
+    <string name="offline_maps_area_too_large">Слишком большая область (%1$d тайлов). Уменьшите область или диапазон зума.</string>
+    <string name="offline_maps_preparing">Подготовка…</string>
+    <string name="offline_maps_complete">Загрузка завершена</string>
+    <string name="offline_maps_complete_errors">Загрузка завершена с ошибками (%1$d)</string>
+    <string name="offline_maps_downloading_msg">Загрузка…</string>
+    <string name="offline_maps_zoom_progress">Зум %1$d (%2$d..%3$d): %4$d</string>
+    <string name="offline_maps_error">Ошибка: %1$s</string>
+    <string name="offline_maps_cache">Кэш карт</string>
+    <string name="offline_maps_used">Использовано: %1$s МБ</string>
+    <string name="offline_maps_storage">Хранилище: внутренняя память приложения (osmdroid).</string>
+    <string name="offline_maps_refresh">Обновить</string>
+    <string name="offline_maps_clear_cache">Очистить кэш</string>
+    <string name="offline_maps_clear_title">Очистить кэш карт?</string>
+    <string name="offline_maps_clear_text">Все загруженные тайлы офлайн-карт будут удалены. Это действие нельзя отменить.</string>
+    <string name="offline_maps_clear_confirm">Очистить</string>
+    <string name="offline_maps_tip">Совет: для работы без интернета заранее загрузите нужную область и при необходимости отключите «Использовать сеть для тайлов». Большие области и высокий зум создают много тайлов.</string>
+
+    <!-- Permissions onboarding -->
+    <string name="perm_title">Настройка разрешений</string>
+    <string name="perm_intro">Для записи поездок, работы с датчиками и отслеживания в фоне приложению нужны разрешения. Запрашиваем их по шагам с пояснениями. Можно пропустить, но часть функций может быть ограничена.</string>
+    <string name="perm_step_of">Шаг %1$d из %2$d</string>
+    <string name="perm_status_granted">Статус: разрешено</string>
+    <string name="perm_status_denied">Статус: не разрешено</string>
+    <string name="perm_denied_forever">Похоже, разрешение отклонено навсегда. Откройте настройки приложения, чтобы выдать его вручную.</string>
+    <string name="perm_open_settings">Настройки</string>
+    <string name="perm_location_title">Местоположение</string>
+    <string name="perm_location_rationale">Для записи GPS-маршрута, скорости и навигации по треку во время велотренировки.</string>
+    <string name="perm_bt_title">Bluetooth (датчики)</string>
+    <string name="perm_bt_rationale">Для подключения датчиков пульса, каденса, мощемеров и умных велостанков по Bluetooth (BLE).</string>
+    <string name="perm_notifications_title">Уведомления</string>
+    <string name="perm_notifications_rationale">Нужно для показа уведомления об активной поездке и управления записью в фоне (Android 13+).</string>
+    <string name="perm_bg_location_title">Фоновое местоположение</string>
+    <string name="perm_bg_location_rationale">Для записи GPS-маршрута, скорости и навигации, когда экран выключен или приложение в фоне во время тренировки.</string>
+    <string name="perm_hint_location">Без разрешения на местоположение запись трека, скорость и дистанция не будут работать.</string>
+    <string name="perm_hint_bt">Без разрешения Bluetooth поиск и подключение датчиков будут недоступны (показатели GPS продолжат работать).</string>
+    <string name="perm_hint_notifications">Без разрешения на уведомления система может ограничить запись в фоне на Android 13+.</string>
+    <string name="perm_hint_bg_location">Без фонового местоположения запись может остановиться при сворачивании приложения или выключении экрана.</string>
+    <string name="perm_hint_default">Это разрешение помогает приложению работать корректно.</string>
+    <string name="perm_bg_not_granted_warning">Фоновое местоположение не выдано — запись может остановиться при сворачивании приложения. Вы можете выдать его в настройках (Местоположение → Разрешить всегда).</string>
+    <string name="perm_bg_hint_granted">Фоновое местоположение разрешено.</string>
+    <string name="perm_bg_hint_r">На Android 11+ включите фоновое местоположение вручную: Настройки → Разрешения → Местоположение → «Разрешить всегда».</string>
+    <string name="perm_bg_hint_q">На Android 10 система покажет отдельный запрос фонового местоположения.</string>
+    <string name="perm_bg_hint_pre_q">На этой версии Android отдельное разрешение для фона не требуется.</string>
+
+    <!-- Tracking screen (legacy/aux) -->
+    <string name="tracking_title">Тренировка</string>
+    <string name="tracking_status">Статус: %1$s</string>
+    <string name="tracking_status_stopped">Остановлено</string>
+    <string name="tracking_status_auto_paused">Пауза (скорость &lt; 2 км/ч)</string>
+    <string name="tracking_status_recording">Запись</string>
+    <string name="tracking_workout_type">Тип тренировки</string>
+    <string name="tracking_start">Начать тренировку</string>
+    <string name="tracking_export_last">Экспорт последней сохранённой тренировки</string>
+    <string name="tracking_exporting_format">Экспорт %1$s…</string>
+    <string name="tracking_export_share_format">Экспорт (%1$s) и отправка</string>
+    <string name="tracking_export_hint">Файл сохраняется в «Загрузки/Bike_» и открывается системное меню отправки (GPX, TCX, FIT).</string>
+    <string name="tracking_pause">Пауза</string>
+    <string name="tracking_resume">Продолжить</string>
+    <string name="tracking_stop">Стоп</string>
+    <string name="tracking_auto_pause_hint">Автопауза: время в движении не накапливается при скорости ниже 2 км/ч и возобновляется при ≥ 2,5 км/ч. Можно отключить в настройках вида.</string>
+    <string name="tracking_metric_moving_time">Время в движении</string>
+    <string name="tracking_metric_elapsed_time">Общее время</string>
+    <string name="tracking_metric_distance">Дистанция</string>
+    <string name="tracking_metric_speed_gps">Текущая скорость (GPS)</string>
+    <string name="tracking_metric_avg_speed">Средняя скорость</string>
+    <string name="tracking_metric_max_speed">Макс. скорость</string>
+    <string name="tracking_metric_elevation">Набор высоты</string>
+    <string name="tracking_metric_hr">Пульс</string>
+    <string name="tracking_metric_cadence">Каденс</string>
+    <string name="tracking_metric_power">Мощность</string>
+    <string name="tracking_metric_speed_sensor">Скорость (датчик)</string>
+    <string name="tracking_metric_steps">Шаги</string>
+    <string name="tracking_sensor_settings">Настройки датчика (CSC)</string>
+    <string name="tracking_sensor_settings_hint">Длина окружности колеса используется для расчёта скорости и каденса по датчику CSC (0x1816).</string>
+    <string name="tracking_circumference_label">Окружность, мм</string>
+    <string name="tracking_current_value">Текущее значение: %1$.0f мм (по умолчанию 2105 мм)</string>
+
+    <!-- Export / workout types / errors -->
+    <string name="export_gpx_success">Файл сохранён: %1$s</string>
+    <string name="export_gpx_error">Не удалось экспортировать</string>
+    <string name="export_error">Ошибка экспорта</string>
+    <string name="export_no_workout">Нет сохранённых тренировок для экспорта</string>
+    <string name="error_cannot_save_downloads">Не удалось сохранить файл в «Загрузки»</string>
+    <string name="workout_type_cycling">Велосипед</string>
+    <string name="workout_type_running">Бег</string>
+    <string name="workout_type_walking">Ходьба</string>
+    <string name="bc_map_placeholder">Начните тренировку или загрузите маршрут</string>
+    <string name="bc_importing_route">Импорт маршрута…</string>
+    <string name="bc_route_points_fmt">%1$d точек</string>
+
+    <!-- Профиль спортсмена -->
+    <string name="profile_title">Профиль спортсмена</string>
+    <string name="profile_athlete_data">Данные спортсмена</string>
+    <string name="profile_weight">Вес</string>
+    <string name="profile_max_hr">Макс. пульс</string>
+    <string name="profile_resting_hr">Пульс покоя</string>
+    <string name="profile_ftp">FTP</string>
+    <string name="profile_age">Возраст</string>
+    <string name="profile_years">лет</string>
+    <string name="profile_sex">Пол</string>
+    <string name="profile_male">Мужской</string>
+    <string name="profile_female">Женский</string>
+    <string name="profile_defaults_hint">По умолчанию: 75 кг, 190 уд/мин, 60 уд/мин, 200 Вт, 30 лет, мужской. Зоны обновляются автоматически.</string>
+    <string name="profile_hr_zones">Пульсовые зоны (Карвонен)</string>
+    <string name="profile_power_zones">Зоны мощности (Когган)</string>
+    <string name="profile_build_info">Информация о сборке</string>
+    <string name="profile_health_connect">Экспорт в Health Connect</string>
+    <string name="profile_health_connect_enable">Экспортировать завершённые тренировки</string>
+    <string name="profile_health_connect_hint">Записывает завершённые тренировки в Health Connect и может импортировать сессии езды на велосипеде, бега и ходьбы из других приложений как краткие записи.</string>
+    <string name="health_status_checking">Проверка Health Connect…</string>
+    <string name="health_status_unavailable">Health Connect недоступен на этом устройстве</string>
+    <string name="health_status_ready">Готово</string>
+    <string name="health_status_permissions_needed">Нужны разрешения</string>
+    <string name="health_grant_permissions">Дать разрешения</string>
+    <string name="health_rationale_title">Экспорт в Health Connect</string>
+    <string name="health_rationale_text">Приложение может записывать завершённые тренировки, шаги, пульс, дистанцию и примерные калории в Health Connect. Также оно может читать сессии тренировок и связанные сводки, когда вы нажмёте «Импорт». Чтение и запись начинаются только после вашего действия в профиле спортсмена; экспорт можно отключить в любой момент.</string>
+    <string name="health_rationale_close">Закрыть</string>
+    <string name="health_import">Импортировать тренировки</string>
+    <string name="health_imported_fmt">Импортировано: %1$d, пропущено: %2$d</string>
+    <string name="health_import_permissions_needed">Разрешения на чтение не получены</string>
+    <string name="health_import_error_fmt">Ошибка импорта: %1$s</string>
+
+    <!-- Названия зон -->
+    <string name="zone_hr_z1">Восстановление</string>
+    <string name="zone_hr_z2">Выносливость</string>
+    <string name="zone_hr_z3">Аэробная</string>
+    <string name="zone_hr_z4">Пороговая</string>
+    <string name="zone_hr_z5">Анаэробная</string>
+    <string name="zone_pwr_z1">Активное восстановление</string>
+    <string name="zone_pwr_z2">Выносливость</string>
+    <string name="zone_pwr_z3">Темпо</string>
+    <string name="zone_pwr_z4">Лактатный порог</string>
+    <string name="zone_pwr_z5">VO2 Max</string>
+    <string name="zone_pwr_z6">Анаэробная</string>
+    <string name="zone_pwr_z7">Нейромышечная</string>
+
+    <!-- Аналитика в реальном времени -->
+    <string name="analytics_zone">Зона</string>
+    <string name="analytics_zone_fmt">Z%1$d %2$s</string>
+    <string name="analytics_np">NP</string>
+    <string name="analytics_if">IF</string>
+    <string name="analytics_tss">TSS</string>
+    <string name="analytics_hrtss">hrTSS</string>
+    <string name="analytics_kcal">Энергия</string>
+    <string name="analytics_kcal_power">по мощности</string>
+    <string name="analytics_kcal_hr">по пульсу</string>
+
+    <!-- Аналитика тренировки -->
+    <string name="detail_load_analytics">Аналитика нагрузки</string>
+    <string name="detail_time_in_zones">Время в зонах</string>
+    <string name="detail_power_zones_tab">Мощность (7)</string>
+    <string name="detail_hr_zones_tab">Пульс (5)</string>
+    <string name="detail_recovery_light">Лёгкая нагрузка — восстановление ~1 день</string>
+    <string name="detail_recovery_medium">Средняя нагрузка — восстановление 1–2 дня</string>
+    <string name="detail_recovery_heavy">Тяжёлая нагрузка — восстановление 2+ дня</string>
+    <string name="detail_no_power_data">Нет данных по мощности</string>
+    <string name="detail_no_hr_zone_data">Нет данных по пульсовым зонам</string>
+
+    <!-- Аналитика формы / PMC -->
+    <string name="tab_stats">Форма</string>
+    <string name="stats_title">Форма и усталость</string>
+    <string name="stats_ctl">Форма (CTL)</string>
+    <string name="stats_atl">Усталость (ATL)</string>
+    <string name="stats_tsb">Свежесть (TSB)</string>
+    <string name="stats_period_1m">1 месяц</string>
+    <string name="stats_period_3m">3 месяца</string>
+    <string name="stats_period_6m">6 месяцев</string>
+    <string name="stats_period_all">Всё время</string>
+    <string name="stats_status_freshness_drop">Свежесть / спад формы</string>
+    <string name="stats_status_peak">Пик формы / готов к гонке</string>
+    <string name="stats_status_maintenance">Поддержание формы</string>
+    <string name="stats_status_optimal">Оптимальная тренировочная зона</string>
+    <string name="stats_status_high_risk">Высокий риск перетренированности</string>
+    <string name="stats_hint_low_data">Запишите больше тренировок с пульсометром или датчиком мощности, чтобы увидеть динамику формы.</string>
+    <string name="stats_help_title">Как читать график?</string>
+    <string name="stats_help_body">CTL (Форма) — долгосрочная тренировочная нагрузка (~42 дня). ATL (Усталость) — краткосрочная нагрузка (~7 дней). TSB (Свежесть) = CTL вчера − ATL вчера. Отрицательная свежесть (-10…-25) — норма при регулярных тренировках: это продуктивная нагрузка. Положительная свежесть означает восстановление и готовность к тяжёлой работе или гонке.</string>
+    <string name="stats_daily_tss">Дневной TSS</string>
+    <string name="stats_no_data">Пока нет данных</string>
+    <string name="stats_selected_day">Выбранный день</string>
+
+    <!-- Missing customization/metric labels -->
+    <string name="bc_stride_walking">Длина шага при ходьбе, см</string>
+    <string name="bc_stride_running">Длина шага при беге, см</string>
+    <string name="bc_stride_hint">Используется для оценки дистанции/темпа по шагам, когда GPS недоступен.</string>
+    <string name="metric_hr">Пульс</string>
+    <string name="metric_steps">Шаги</string>
+    <string name="metric_step_cadence">Каденс шагов</string>
+    <string name="metric_pace">Темп</string>
+    <string name="bc_auto_lap">Автокруг</string>
+    <string name="bc_auto_lap_off">Выкл</string>
+    <string name="bc_auto_lap_1km">1 км</string>
+    <string name="bc_auto_lap_5km">5 км</string>
+    <string name="bc_auto_lap_10km">10 км</string>
+    <string name="bc_lap_toast">Круг %1$d: %2$s • %3$d Вт • %4$d уд/мин</string>
+    <string name="detail_laps">Круги</string>
+    <string name="detail_lap_no">№</string>
+    <string name="detail_lap_time">Время</string>
+    <string name="detail_lap_distance">Дистанция</string>
+    <string name="detail_lap_avg_speed">Ср. скорость</string>
+    <string name="detail_lap_avg_hr">Ср. пульс</string>
+    <string name="detail_lap_avg_power">Ср. мощность</string>
+    <string name="detail_download_fit">Скачать .FIT</string>
+    <string name="detail_download_gpx">Скачать .GPX</string>
+
+    <!-- Structured workouts -->
+    <string name="sw_title">Тренировки</string>
+    <string name="sw_library">Библиотека тренировок</string>
+    <string name="sw_start">Начать тренировку</string>
+    <string name="sw_import_zwo">Импорт .ZWO</string>
+    <string name="sw_create">Создать</string>
+    <string name="sw_builder_title">Конструктор тренировки</string>
+    <string name="sw_name">Название</string>
+    <string name="sw_description">Описание</string>
+    <string name="sw_add_step">Добавить шаг</string>
+    <string name="sw_save_workout">Сохранить тренировку</string>
+    <string name="sw_delete">Удалить</string>
+    <string name="sw_step_warmup">Разминка</string>
+    <string name="sw_step_work">Работа</string>
+    <string name="sw_step_recovery">Отдых</string>
+    <string name="sw_step_cooldown">Заминка</string>
+    <string name="sw_duration_min">Длительность (мин)</string>
+    <string name="sw_target_min_pct">Мин %FTP</string>
+    <string name="sw_target_max_pct">Макс %FTP</string>
+    <string name="sw_repeat">Повтор</string>
+    <string name="sw_est_tss">Оценка TSS %1$d</string>
+    <string name="sw_minutes_short">%1$d мин</string>
+    <string name="sw_player_next">Далее: %1$s</string>
+    <string name="sw_player_in_target">В цели!</string>
+    <string name="sw_player_increase">Прибавь (+%1$d Вт)</string>
+    <string name="sw_player_decrease">Сбавь (-%1$d Вт)</string>
+    <string name="sw_skip">Пропустить</string>
+    <string name="sw_repeat_step">Повторить шаг</string>
+    <string name="sw_target_fmt">%1$d-%2$d Вт</string>
+    <string name="sw_hr_target_fmt">Пульс Z%1$d-Z%2$d</string>
+    <string name="sw_import_ok">Тренировка импортирована</string>
+    <string name="sw_import_failed">Не удалось импортировать тренировку. Неверный формат файла .ZWO.</string>
+
+    <!-- Routes / Stage 13 -->
+    <string name="routes_title">Маршруты</string>
+    <string name="routes_import">Импорт GPX/FIT</string>
+    <string name="routes_use">Использовать на карте</string>
+    <string name="routes_empty">Маршрутов пока нет. Импортируйте .gpx или .fit.</string>
+    <string name="bc_routes">Маршруты</string>
+    <string name="bc_off_route_banner">Вы сошли с маршрута: %1$d м</string>
+    <string name="bc_return_to_route">Возврат: %1$d м, %2$s</string>
+    <string name="bc_route_remaining">До финиша: %1$s км • +%2$d м набора</string>
+    <string name="bc_route_elevation_profile">Профиль высот</string>
+    <string name="sensors_type_rsc">Скорость/каденция бега</string>
+    <string name="sensors_type_ftms">Умный станок (FTMS)</string>
+    <string name="ftms_panel_title">Умный станок (ERG)</string>
+    <string name="ftms_mode_erg">ERG (Авто-мощность)</string>
+    <string name="ftms_mode_resistance">Сопротивление (ручной %)</string>
+    <string name="ftms_status_connected">Подключен</string>
+    <string name="ftms_status_control">Управление получено</string>
+    <string name="ftms_status_error">Ошибка управления</string>
+    <string name="ftms_status_disconnected">Отключен</string>
+    <string name="ftms_target_power">Цель: %1$d Вт</string>
+    <string name="ftms_target_resistance">Сопротивление: %1$d%%</string>
+    <string name="ftms_power_minus">-5 Вт</string>
+    <string name="ftms_power_plus">+5 Вт</string>
+    <string name="ftms_res_minus">-5%</string>
+    <string name="ftms_res_plus">+5%</string>
+</resources>

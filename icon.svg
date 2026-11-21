@@ -1,0 +1,63 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://w3.org">
+  <defs>
+    <!-- Глубокий темный фон в стиле интерфейса -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1E2538"/>
+      <stop offset="100%" stop-color="#0F131F"/>
+    </linearGradient>
+    
+    <!-- Акцентный синий градиент для трека -->
+    <linearGradient id="accentBlue" x1="100" y1="120" x2="412" y2="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4DA3FF"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+
+    <!-- Свечение линии маршрута -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Подложка иконки -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+
+  <!-- Координатная сетка (Grid) -->
+  <g stroke="#2B354F" stroke-width="2" opacity="0.65">
+    <line x1="128" y1="0" x2="128" y2="512"/>
+    <line x1="256" y1="0" x2="256" y2="512"/>
+    <line x1="384" y1="0" x2="384" y2="512"/>
+    <line x1="0" y1="128" x2="512" y2="128"/>
+    <line x1="0" y1="256" x2="512" y2="256"/>
+    <line x1="0" y1="384" x2="512" y2="384"/>
+  </g>
+
+  <!-- Маршрут GPS на фоне -->
+  <path d="M 96 360 L 176 280 L 256 310 L 340 180 L 400 140" 
+        stroke="#FF6B2C" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" 
+        stroke-dasharray="18 14" opacity="0.85"/>
+
+  <!-- Колеса велосипеда -->
+  <circle cx="164" cy="316" r="58" stroke="#FFFFFF" stroke-width="16"/>
+  <circle cx="348" cy="316" r="58" stroke="#FFFFFF" stroke-width="16"/>
+  
+  <!-- Втулки колес -->
+  <circle cx="164" cy="316" r="10" fill="#4DA3FF"/>
+  <circle cx="348" cy="316" r="10" fill="#4DA3FF"/>
+
+  <!-- Рама велосипеда -->
+  <path d="M 164 316 L 236 226 L 324 226 L 252 316 Z" 
+        stroke="url(#accentBlue)" stroke-width="16" stroke-linejoin="round" filter="url(#glow)"/>
+  
+  <!-- Вилка и руль -->
+  <path d="M 348 316 L 316 196 L 344 196" 
+        stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Подседельный штырь и седло -->
+  <path d="M 236 226 L 222 194 M 204 194 L 242 194" 
+        stroke="#FFFFFF" stroke-width="16" stroke-linecap="round"/>
+
+  <!-- Точка GPS-старта (пин) -->
+  <circle cx="400" cy="140" r="16" fill="#FF6B2C"/>
+  <circle cx="400" cy="140" r="6" fill="#FFFFFF"/>
+</svg>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Bike_" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd">
+  <metadata>
+    <name>Workout 2026-06-20 10:00</name>
+    <desc>Distance 1.25 km, moving 300 s, elapsed 320 s, elev 12.0 m</desc>
+    <time>2026-06-20T07:00:00Z</time>
+  </metadata>
+  <trk>
+    <name>Workout 2026-06-20 10:00</name>
+    <type>cycling</type>
+    <trkseg>
+      <trkpt lat="55.7558000" lon="37.6173000">
+        <ele>156.00</ele>
+        <time>2026-06-20T07:00:00Z</time>
+        <extensions>
+          <gpxtpx:TrackPointExtension>
+            <gpxtpx:speed>5.56</gpxtpx:speed>
+            <gpxtpx:hr>110</gpxtpx:hr>
+            <gpxtpx:cad>70</gpxtpx:cad>
+            <gpxtpx:watts>120</gpxtpx:watts>
+          </gpxtpx:TrackPointExtension>
+        </extensions>
+      </trkpt>
+      <trkpt lat="55.7560500" lon="37.6177000">
+        <ele>158.00</ele>
+        <time>2026-06-20T07:00:10Z</time>
+        <extensions>
+          <gpxtpx:TrackPointExtension>
+            <gpxtpx:speed>6.39</gpxtpx:speed>
+            <gpxtpx:hr>118</gpxtpx:hr>
+            <gpxtpx:cad>78</gpxtpx:cad>
+            <gpxtpx:watts>145</gpxtpx:watts>
+          </gpxtpx:TrackPointExtension>
+        </extensions>
+      </trkpt>
+      <trkpt lat="55.7563200" lon="37.6181500">
+        <ele>160.50</ele>
+        <time>2026-06-20T07:00:20Z</time>
+        <extensions>
+          <gpxtpx:TrackPointExtension>
+            <gpxtpx:speed>7.22</gpxtpx:speed>
+            <gpxtpx:hr>126</gpxtpx:hr>
+            <gpxtpx:cad>82</gpxtpx:cad>
+            <gpxtpx:watts>170</gpxtpx:watts>
+          </gpxtpx:TrackPointExtension>
+        </extensions>
+      </trkpt>
+      <trkpt lat="55.7566000" lon="37.6186200">
+        <ele>162.00</ele>
+        <time>2026-06-20T07:00:30Z</time>
+        <extensions>
+          <gpxtpx:TrackPointExtension>
+            <gpxtpx:speed>6.94</gpxtpx:speed>
+            <gpxtpx:hr>130</gpxtpx:hr>
+            <gpxtpx:cad>80</gpxtpx:cad>
+            <gpxtpx:watts>160</gpxtpx:watts>
+          </gpxtpx:TrackPointExtension>
+        </extensions>
+      </trkpt>
+      <trkpt lat="55.7568500" lon="37.6190500">
+        <ele>161.00</ele>
+        <time>2026-06-20T07:00:40Z</time>
+        <extensions>
+          <gpxtpx:TrackPointExtension>
+            <gpxtpx:speed>6.11</gpxtpx:speed>
+            <gpxtpx:hr>128</gpxtpx:hr>
+            <gpxtpx:cad>76</gpxtpx:cad>
+            <gpxtpx:watts>140</gpxtpx:watts>
+          </gpxtpx:TrackPointExtension>
+        </extensions>
+      </trkpt>
+      <trkpt lat="55.7571000" lon="37.6194500">
+        <ele>160.00</ele>
+        <time>2026-06-20T07:00:50Z</time>
+        <extensions>
+          <gpxtpx:TrackPointExtension>
+            <gpxtpx:speed>5.83</gpxtpx:speed>
+            <gpxtpx:hr>124</gpxtpx:hr>
+            <gpxtpx:cad>74</gpxtpx:cad>
+            <gpxtpx:watts>130</gpxtpx:watts>
+          </gpxtpx:TrackPointExtension>
+        </extensions>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
