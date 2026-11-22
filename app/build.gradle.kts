@@ -140,7 +140,7 @@ dependencies {
     // Tests
     testImplementation(libs.junit)
     testImplementation(libs.kxml2)
-    testImplementation("org.json:json:20240303")
+    testImplementation("org.json:json:20260719")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
