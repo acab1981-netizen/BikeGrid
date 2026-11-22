@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SIGNING_CONFIGURED: ${{ secrets.KEYSTORE_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,6 +42,26 @@ jobs:
 
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
+
+      - name: Configure release signing
+        if: env.SIGNING_CONFIGURED == 'true'
+        env:
+          SIGNING_KEYSTORE_B64: ${{ secrets.KEYSTORE_BASE64 }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          mkdir -p android
+          printf '%s' "$SIGNING_KEYSTORE_B64" | base64 --decode > android/release-key.jks
+          printf 'storeFile=android/release-key.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$SIGNING_STORE_PASSWORD" "$SIGNING_KEY_ALIAS" "$SIGNING_KEY_PASSWORD" > android/key.properties
+          keytool -list -keystore android/release-key.jks -storepass "$SIGNING_STORE_PASSWORD" \
+            -alias "$SIGNING_KEY_ALIAS" > /dev/null
+          echo "Release signing configured for alias $SIGNING_KEY_ALIAS"
+
+      - name: Signing fallback notice
+        if: env.SIGNING_CONFIGURED != 'true'
+        run: echo "KEYSTORE_BASE64 secret is not set: the release APK will use the debug signing config."
 
       - name: Unit tests + release build
         run: ./gradlew --no-daemon testDebugUnitTest assembleRelease

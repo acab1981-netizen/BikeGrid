@@ -72,4 +72,15 @@
 
 Релиз подписывается ключом из `android/key.properties` и `android/release-key.jks` (не хранятся в репозитории). Без них CI собирает APK с debug-подписью — для публикации используйте подписанный APK из Releases.
 
+Чтобы CI тоже собирал подписанный APK, добавьте в настройках репозитория **Settings → Secrets and variables → Actions → New repository secret** четыре секрета:
+
+| Секрет | Значение |
+|---|---|
+| `KEYSTORE_BASE64` | `android/release-key.jks`, закодированный в base64 одним потоком: `base64 -w0 release-key.jks` (Linux) или `[Convert]::ToBase64String([IO.File]::ReadAllBytes("release-key.jks"))` (PowerShell) |
+| `KEY_STORE_PASSWORD` | пароль keystore |
+| `KEY_ALIAS` | `rustore-key` |
+| `KEY_PASSWORD` | пароль ключа |
+
+Workflow (`Configure release signing`) сам создаст `android/key.properties` и проверит алиас через `keytool`. Если секреты не заданы, сборка продолжается с debug-подписью и в логе выводится пояснение.
+
 Основные компоненты: Kotlin, Jetpack Compose, Room, Coroutines/Flow, osmdroid, Nordic BLE, Android Health Connect, Firebase Crashlytics. Сборка и тесты выполняются в GitHub Actions (`.github/workflows/android.yml`).
