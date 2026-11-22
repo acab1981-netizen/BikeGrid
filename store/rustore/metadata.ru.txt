@@ -14,7 +14,7 @@ METADATA ДЛЯ RuStore — BikeGrid 1.0.7
 
 Разработчик: BikeApp
 Адрес сайта: [указать при наличии]
-E-mail поддержки: [указать e-mail разработчика]
+E-mail поддержки: vikaweb@mail.ru
 
 Технические данные:
 • Пакет: com.mybike.computer
