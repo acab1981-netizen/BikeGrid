@@ -61,7 +61,8 @@ jobs:
 
       - name: Signing fallback notice
         if: env.SIGNING_CONFIGURED != 'true'
-        run: echo "KEYSTORE_BASE64 secret is not set: the release APK will use the debug signing config."
+        run: |
+          echo "KEYSTORE_BASE64 secret is not set: the release APK will use the debug signing config."
 
       - name: Unit tests + release build
         run: ./gradlew --no-daemon testDebugUnitTest assembleRelease
