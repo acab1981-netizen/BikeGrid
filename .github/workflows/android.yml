@@ -3,12 +3,15 @@ name: Android CI
 on:
   push:
     branches: [main, master]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       SIGNING_CONFIGURED: ${{ secrets.KEYSTORE_BASE64 != '' }}
     steps:
@@ -73,3 +76,13 @@ jobs:
           name: bike-release
           path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: BikeGrid ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: app/build/outputs/apk/release/app-release.apk
+          generate_release_notes: true
+          fail_on_unmatched_files: true

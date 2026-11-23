@@ -174,6 +174,7 @@
     <string name="detail_export_hint">Файл сохраняется в «Загрузки/Bike_», после чего открывается меню отправки (Strava, Garmin, почта, файлы и т.д.).</string>
     <string name="chart_speed">Скорость, км/ч</string>
     <string name="chart_hr">Пульс, уд/мин</string>
+    <string name="chart_power">Мощность, Вт</string>
     <string name="chart_altitude">Высота, м</string>
     <string name="chart_stats">мин %1$.1f · макс %2$.1f · дистанция %3$.2f км</string>
 
@@ -277,6 +278,11 @@
     <string name="perm_hint_notifications">Без разрешения на уведомления система может ограничить запись в фоне на Android 13+.</string>
     <string name="perm_hint_bg_location">Без фонового местоположения запись может остановиться при сворачивании приложения или выключении экрана.</string>
     <string name="perm_hint_default">Это разрешение помогает приложению работать корректно.</string>
+
+    <!-- Распознавание активности / шаги -->
+    <string name="perm_activity_title">Физическая активность (шаги)</string>
+    <string name="perm_activity_rationale">Для подсчёта шагов и каденса шагов во время ходьбы и бега. Маршрут и дистанция по GPS будут записываться и без этого разрешения.</string>
+    <string name="perm_hint_activity">Без разрешения на физическую активность шаги и их каденс будут недоступны на новых версиях Android, но запись по GPS продолжит работать при выданном разрешении на местоположение.</string>
     <string name="perm_bg_not_granted_warning">Фоновое местоположение не выдано — запись может остановиться при сворачивании приложения. Вы можете выдать его в настройках (Местоположение → Разрешить всегда).</string>
     <string name="perm_bg_hint_granted">Фоновое местоположение разрешено.</string>
     <string name="perm_bg_hint_r">На Android 11+ включите фоновое местоположение вручную: Настройки → Разрешения → Местоположение → «Разрешить всегда».</string>
@@ -423,10 +429,17 @@
     <string name="bc_stride_walking">Длина шага при ходьбе, см</string>
     <string name="bc_stride_running">Длина шага при беге, см</string>
     <string name="bc_stride_hint">Используется для оценки дистанции/темпа по шагам, когда GPS недоступен.</string>
+    <string name="sensors_steps_available">Датчик шагов: доступен</string>
+    <string name="sensors_steps_unavailable">Датчик шагов: недоступен</string>
+    <string name="detail_steps">Шаги</string>
+    <string name="detail_avg_step_cadence">Ср. каденс шагов</string>
     <string name="metric_hr">Пульс</string>
     <string name="metric_steps">Шаги</string>
     <string name="metric_step_cadence">Каденс шагов</string>
     <string name="metric_pace">Темп</string>
+    <string name="unit_steps">шаги</string>
+    <string name="unit_spm">шаг/мин</string>
+    <string name="unit_min_per_km">мин/км</string>
     <string name="bc_auto_lap">Автокруг</string>
     <string name="bc_auto_lap_off">Выкл</string>
     <string name="bc_auto_lap_1km">1 км</string>
