@@ -379,7 +379,7 @@ private fun LoadAnalyticsSection(w: WorkoutEntity) {
                 modifier = Modifier.weight(1f),
                 title = stringResource(R.string.analytics_if),
                 value = w.intensityFactor?.let { String.format(Locale.US, "%.2f", it) } ?: "--",
-                subtitle = "IF"
+                subtitle = ""
             )
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
