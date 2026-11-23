@@ -11,12 +11,16 @@ on:
         description: 'Новая версия, например 1.0.9'
         required: true
         type: string
+  # Пуш ветки notes/vX.Y.Z обновляет текст уже существующего релиза (без пересоздания тега)
+  push:
+    branches: ['notes/**']
 
 permissions:
   contents: write
 
 jobs:
   release:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,3 +52,23 @@ jobs:
           git push origin HEAD:main
           git push origin "v$VERSION"
           echo "Готово: v$VERSION запушен. Android CI соберёт APK и опубликует релиз."
+
+  # Обновление текста релиза, если тег уже есть и его нельзя удалить (repository rule)
+  fix-notes:
+    if: startsWith(github.ref, 'refs/heads/notes/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update existing release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          TAG="${BRANCH#notes/}"
+          bash .github/scripts/release-notes.sh "$TAG"
+          gh release edit "$TAG" --title "BikeGrid ${TAG#v}" --notes-file release-body.md
+          echo "Текст релиза $TAG обновлён."
