@@ -1670,8 +1670,8 @@ private fun dashboardFieldsForType(fields: List<String>, isFootWorkout: Boolean)
         when (key) {
             // Велосипедные метрики
             "cadence", "power" -> !isFootWorkout
-            // Метрики шагов и темпа — только для бега/ходьбы
-            "steps", "step_cadence", "pace" -> isFootWorkout
+            // Метрики шагов — только для бега/ходьбы; темп показываем во всех режимах
+            "steps", "step_cadence" -> isFootWorkout
             else -> true
         }
     }
