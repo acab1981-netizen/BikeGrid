@@ -165,6 +165,14 @@ fun BikeComputerScreen(
     // Crash recovery is handled globally in MainActivity.
     var showCustomizeDialog by rememberSaveable { mutableStateOf(false) }
     var importingRoute by rememberSaveable { mutableStateOf(false) }
+    var selectedWorkoutType by rememberSaveable {
+        mutableStateOf(WorkoutTrackingService.WORKOUT_TYPE_CYCLING)
+    }
+    val isFootWorkout = selectedWorkoutType == WorkoutTrackingService.WORKOUT_TYPE_RUNNING ||
+        selectedWorkoutType == WorkoutTrackingService.WORKOUT_TYPE_WALKING
+    val visibleDashboardFields = remember(dashboardFields, isFootWorkout) {
+        dashboardFieldsForType(dashboardFields, isFootWorkout)
+    }
 
     val gpxPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
@@ -304,7 +312,7 @@ fun BikeComputerScreen(
                             isPaused = metrics.isAutoPaused
                         )
                     }
-                    if (metrics.ftmsConnected) {
+                    if (metrics.ftmsConnected && !isFootWorkout) {
                         SmartTrainerPanel(
                             metrics = metrics,
                             palette = palette,
@@ -316,7 +324,7 @@ fun BikeComputerScreen(
                     }
                     MetricsDashboard(
                         metrics = metrics,
-                        selectedFields = dashboardFields,
+                        selectedFields = visibleDashboardFields,
                         compact = uiCompactCards,
                         palette = palette,
                         onCustomize = { showCustomizeDialog = true },
@@ -343,6 +351,8 @@ fun BikeComputerScreen(
         ControlPanel(
             metrics = metrics,
             palette = palette,
+            selectedType = selectedWorkoutType,
+            onSelectType = { selectedWorkoutType = it },
             onStart = { type -> tryStart(type) },
             onPause = { viewModel.pauseWorkout() },
             onResume = { viewModel.resumeWorkout() },
@@ -1197,13 +1207,14 @@ private fun chipColors(palette: BikeUiPalette) = FilterChipDefaults.filterChipCo
 private fun ControlPanel(
     metrics: WorkoutMetrics,
     palette: BikeUiPalette,
+    selectedType: String,
+    onSelectType: (String) -> Unit,
     onStart: (String) -> Unit,
     onPause: () -> Unit,
     onResume: () -> Unit,
     onLap: () -> Unit,
     onStopRequest: () -> Unit
 ) {
-    var selectedType by rememberSaveable { mutableStateOf(WorkoutTrackingService.WORKOUT_TYPE_CYCLING) }
     Card(
         colors = CardDefaults.cardColors(containerColor = palette.cardBg),
         shape = RoundedCornerShape(16.dp),
@@ -1224,9 +1235,9 @@ private fun ControlPanel(
                             .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        TypeChip(stringResource(R.string.bc_cycling), WorkoutTrackingService.WORKOUT_TYPE_CYCLING, selectedType, palette) { selectedType = it }
-                        TypeChip(stringResource(R.string.bc_running), WorkoutTrackingService.WORKOUT_TYPE_RUNNING, selectedType, palette) { selectedType = it }
-                        TypeChip(stringResource(R.string.bc_walking), WorkoutTrackingService.WORKOUT_TYPE_WALKING, selectedType, palette) { selectedType = it }
+                        TypeChip(stringResource(R.string.bc_cycling), WorkoutTrackingService.WORKOUT_TYPE_CYCLING, selectedType, palette) { onSelectType(it) }
+                        TypeChip(stringResource(R.string.bc_running), WorkoutTrackingService.WORKOUT_TYPE_RUNNING, selectedType, palette) { onSelectType(it) }
+                        TypeChip(stringResource(R.string.bc_walking), WorkoutTrackingService.WORKOUT_TYPE_WALKING, selectedType, palette) { onSelectType(it) }
                     }
                     Button(
                         onClick = { onStart(selectedType) },
@@ -1652,6 +1663,18 @@ private fun requestIgnoreBatteryOptimizations(context: Context) {
         } catch (_: Exception) { }
     }
 }
+
+/** Показатели зависят от выбранного вида спорта: велосипедные не смешиваются с беговыми/ходьбой. */
+private fun dashboardFieldsForType(fields: List<String>, isFootWorkout: Boolean): List<String> =
+    fields.filter { key ->
+        when (key) {
+            // Велосипедные метрики
+            "cadence", "power" -> !isFootWorkout
+            // Метрики шагов и темпа — только для бега/ходьбы
+            "steps", "step_cadence", "pace" -> isFootWorkout
+            else -> true
+        }
+    }
 
 @Composable
 private fun workoutTypeLabel(type: String): String = when (type.uppercase(Locale.US)) {
