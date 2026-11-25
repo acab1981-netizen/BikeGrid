@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -159,7 +162,7 @@ fun WorkoutDetailScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            HeaderCard(w)
+            HeaderCard(w, points)
             RouteMap(points = points)
             ZoneDistributionCard(w)
             GarminMetricHighlights(w, points)
@@ -167,7 +170,7 @@ fun WorkoutDetailScreen(
             LoadAnalyticsSection(w)
             TimeInZonesSection(w)
             LapsSection(laps = laps)
-            ChartsSection(points = points)
+            ChartsSection(points = points, laps = laps)
             ExportSection(
                 exporting = exportState is WorkoutDetailViewModel.ExportState.InProgress,
                 onExport = { fmt -> viewModel.export(workoutId, fmt) }
@@ -178,7 +181,7 @@ fun WorkoutDetailScreen(
 }
 
 @Composable
-private fun HeaderCard(w: WorkoutEntity) {
+private fun HeaderCard(w: WorkoutEntity, points: List<TrackPointEntity>) {
     val palette = LocalBikeUiPalette.current
     val df = SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale.getDefault())
     val accent = when (w.workoutType.uppercase(Locale.US)) {
@@ -186,34 +189,70 @@ private fun HeaderCard(w: WorkoutEntity) {
         "WALKING" -> Color(0xFF2E7D32)
         else -> palette.accent
     }
-    Card(colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(16.dp)) {
+    val sportIcon = when (w.workoutType.uppercase(Locale.US)) {
+        "RUNNING" -> Icons.Filled.Bolt
+        "WALKING" -> Icons.Filled.Landscape
+        else -> Icons.Filled.Speed
+    }
+    val profile = remember(points) {
+        val s = buildDistanceSeries(points)
+        val alt = s.mapNotNull { it.altitudeM?.toFloat() }
+        if (alt.size >= 2) alt else {
+            val pwr = s.mapNotNull { it.powerWatts?.toFloat() }
+            if (pwr.size >= 2) pwr else s.mapNotNull { it.speedKmh }
+        }
+    }
+
+    Card(colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(18.dp)) {
         Box(
             Modifier
                 .fillMaxWidth()
                 .background(
                     brush = androidx.compose.ui.graphics.Brush.verticalGradient(
-                        listOf(accent.copy(alpha = 0.22f), palette.cardBg)
+                        listOf(accent.copy(alpha = 0.26f), palette.cardBg)
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(18.dp)
                 )
-                .border(1.dp, accent.copy(alpha = 0.35f), RoundedCornerShape(16.dp))
+                .border(1.dp, accent.copy(alpha = 0.4f), RoundedCornerShape(18.dp))
                 .padding(16.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text(typeLabel(w.workoutType), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold, color = palette.textPrimary)
-                        Text(df.format(Date(w.startTimeMs)), style = MaterialTheme.typography.bodyMedium, color = palette.textSecondary)
+                        Text(typeLabel(w.workoutType), fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = accent)
+                        Text(df.format(Date(w.startTimeMs)), fontSize = 12.sp, color = palette.textSecondary)
                     }
                     Box(
                         Modifier
-                            .background(accent.copy(alpha = 0.18f), RoundedCornerShape(999.dp))
-                            .border(1.dp, accent.copy(alpha = 0.4f), RoundedCornerShape(999.dp))
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
-                    ) {
-                        Text(stringResource(R.string.detail_title), color = accent, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                    }
+                            .background(accent.copy(alpha = 0.16f), RoundedCornerShape(14.dp))
+                            .border(1.dp, accent.copy(alpha = 0.4f), RoundedCornerShape(14.dp))
+                            .padding(10.dp)
+                    ) { Icon(sportIcon, contentDescription = null, tint = accent, modifier = Modifier.size(24.dp)) }
                 }
+
+                // Декоративный профиль высоты — «карточка после тренировки» как у Гармина
+                Canvas(Modifier.fillMaxWidth().height(56.dp)) {
+                    val vals = if (profile.size >= 2) profile else List(32) { i -> kotlin.math.sin(i * 0.45f) * 8f + 12f }
+                    val minV = vals.minOrNull() ?: 0f
+                    val maxV = vals.maxOrNull() ?: 1f
+                    val range = (maxV - minV).takeIf { it > 0.01f } ?: 1f
+                    val path = Path().apply {
+                        vals.forEachIndexed { i, v ->
+                            val x = size.width * i / (vals.size - 1).toFloat()
+                            val y = size.height - ((v - minV) / range) * (size.height * 0.8f) - size.height * 0.1f
+                            if (i == 0) moveTo(x, y) else lineTo(x, y)
+                        }
+                    }
+                    val fill = Path().apply {
+                        addPath(path)
+                        lineTo(size.width, size.height)
+                        lineTo(0f, size.height)
+                        close()
+                    }
+                    drawPath(fill, brush = androidx.compose.ui.graphics.Brush.verticalGradient(listOf(accent.copy(alpha = 0.28f), Color.Transparent)))
+                    drawPath(path, color = accent.copy(alpha = 0.85f), style = Stroke(width = 3f))
+                }
+
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     HeroStat(Modifier.weight(1f), stringResource(R.string.detail_distance), String.format(Locale.US, "%.2f", w.distanceMeters / 1000.0), stringResource(R.string.unit_km), accent, palette)
                     HeroStat(Modifier.weight(1f), stringResource(R.string.detail_total_time), formatDuration(w.elapsedTimeMs), "", accent, palette)
@@ -316,31 +355,52 @@ private fun RouteMap(points: List<TrackPointEntity>) {
     }
 }
 
+private data class SummaryStat(
+    val label: String,
+    val value: String,
+    val unit: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector?,
+    val color: Color
+)
+
 @Composable
 private fun SummaryTable(w: WorkoutEntity) {
     val palette = LocalBikeUiPalette.current
     Text(stringResource(R.string.detail_summary), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = palette.textPrimary)
     val stats = buildList {
-        add(Triple(stringResource(R.string.detail_moving_time), formatDuration(w.movingTimeMs), ""))
-        add(Triple(stringResource(R.string.detail_max_speed), String.format(Locale.US, "%.1f", w.maxSpeedKmh), stringResource(R.string.unit_kmh)))
-        add(Triple(stringResource(R.string.detail_elevation_gain), String.format(Locale.US, "%.0f", w.elevationGainMeters), stringResource(R.string.unit_m)))
-        w.avgHeartRateBpm?.let { add(Triple(stringResource(R.string.detail_hr_avg_max), "$it / ${w.maxHeartRateBpm ?: "-"}", stringResource(R.string.unit_bpm))) }
-        w.avgCadenceRpm?.let { add(Triple(stringResource(R.string.detail_cadence_avg_max), String.format(Locale.US, "%.0f / %.0f", it, w.maxCadenceRpm ?: 0f), stringResource(R.string.unit_rpm))) }
-        w.avgPowerWatts?.let { add(Triple(stringResource(R.string.detail_power_avg_max), "$it / ${w.maxPowerWatts ?: "-"}", stringResource(R.string.unit_w))) }
-        w.totalSteps?.takeIf { it > 0 }?.let { add(Triple(stringResource(R.string.detail_steps), "$it", stringResource(R.string.unit_steps))) }
-        w.avgStepCadenceSpm?.let { add(Triple(stringResource(R.string.detail_avg_step_cadence), "$it", stringResource(R.string.unit_spm))) }
+        add(SummaryStat(stringResource(R.string.detail_moving_time), formatDuration(w.movingTimeMs), "", Icons.Filled.Timer, palette.accent))
+        add(SummaryStat(stringResource(R.string.detail_max_speed), String.format(Locale.US, "%.1f", w.maxSpeedKmh), stringResource(R.string.unit_kmh), Icons.Filled.Speed, Color(0xFF2E7DD7)))
+        add(SummaryStat(stringResource(R.string.detail_elevation_gain), String.format(Locale.US, "%.0f", w.elevationGainMeters), stringResource(R.string.unit_m), Icons.Filled.Landscape, Color(0xFF43A047)))
+        w.avgHeartRateBpm?.let { add(SummaryStat(stringResource(R.string.detail_hr_avg_max), "$it / ${w.maxHeartRateBpm ?: "-"}", stringResource(R.string.unit_bpm), Icons.Filled.Favorite, Color(0xFFE53935))) }
+        w.avgCadenceRpm?.let { add(SummaryStat(stringResource(R.string.detail_cadence_avg_max), String.format(Locale.US, "%.0f / %.0f", it, w.maxCadenceRpm ?: 0f), stringResource(R.string.unit_rpm), null, Color(0xFF7E57C2))) }
+        w.avgPowerWatts?.let { add(SummaryStat(stringResource(R.string.detail_power_avg_max), "$it / ${w.maxPowerWatts ?: "-"}", stringResource(R.string.unit_w), Icons.Filled.Bolt, Color(0xFFF9A825))) }
+        w.totalSteps?.takeIf { it > 0 }?.let { add(SummaryStat(stringResource(R.string.detail_steps), "$it", stringResource(R.string.unit_steps), null, Color(0xFF2E7D32))) }
+        w.avgStepCadenceSpm?.let { add(SummaryStat(stringResource(R.string.detail_avg_step_cadence), "$it", stringResource(R.string.unit_spm), null, Color(0xFF26A69A))) }
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         stats.chunked(2).forEach { rowItems ->
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                rowItems.forEach { (label, value, unit) ->
-                    Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(12.dp)) {
-                        Column(Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(12.dp)).padding(12.dp)) {
-                            Text(label, color = palette.textSecondary, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                            Spacer(Modifier.height(2.dp))
-                            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                                Text(value, color = palette.textPrimary, fontWeight = FontWeight.Bold, fontSize = 17.sp, maxLines = 1)
-                                if (unit.isNotBlank()) Text(unit, color = palette.textSecondary, fontSize = 11.sp, modifier = Modifier.padding(bottom = 1.dp))
+                rowItems.forEach { s ->
+                    Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(14.dp)) {
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .border(1.dp, s.color.copy(alpha = 0.25f), RoundedCornerShape(14.dp))
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            if (s.icon != null) {
+                                Box(Modifier.background(s.color.copy(alpha = 0.13f), RoundedCornerShape(10.dp)).padding(7.dp)) {
+                                    Icon(s.icon, contentDescription = null, tint = s.color, modifier = Modifier.size(16.dp))
+                                }
+                            }
+                            Column(Modifier.weight(1f)) {
+                                Text(s.label, color = palette.textSecondary, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                                    Text(s.value, color = palette.textPrimary, fontWeight = FontWeight.Bold, fontSize = 17.sp, maxLines = 1)
+                                    if (s.unit.isNotBlank()) Text(s.unit, color = s.color, fontSize = 10.sp, modifier = Modifier.padding(bottom = 1.dp))
+                                }
                             }
                         }
                     }
@@ -513,18 +573,30 @@ private fun ZoneStrip(title: String, seconds: IntArray, colors: List<Color>, pal
             Text(title, color = palette.textPrimary, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
             Text(TrainingAnalytics.formatMmSs(total), color = palette.textSecondary, fontSize = 12.sp)
         }
-        Row(Modifier.fillMaxWidth().height(14.dp).clip(RoundedCornerShape(999.dp)).background(palette.mutedBg)) {
+        Row(
+            Modifier.fillMaxWidth().height(18.dp),
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
             seconds.forEachIndexed { i, sec ->
-                if (sec > 0) Box(Modifier.weight(sec.toFloat()).fillMaxSize().background(colors.getOrElse(i) { palette.accent }))
+                if (sec > 0) {
+                    val c = colors.getOrElse(i) { palette.accent }
+                    Box(
+                        Modifier
+                            .weight(sec.toFloat())
+                            .fillMaxHeight()
+                            .background(c, RoundedCornerShape(5.dp))
+                    )
+                }
             }
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             seconds.forEachIndexed { i, sec ->
                 if (sec > 0) {
                     val pct = sec * 100 / total
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                        Box(Modifier.height(8.dp).width(8.dp).background(colors.getOrElse(i) { palette.accent }, RoundedCornerShape(2.dp)))
-                        Text("Z${i+1} $pct%", color = palette.textSecondary, fontSize = 10.sp)
+                    val c = colors.getOrElse(i) { palette.accent }
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Box(Modifier.height(8.dp).width(8.dp).background(c, RoundedCornerShape(2.dp)))
+                        Text("Z${i + 1} · $pct% · ${TrainingAnalytics.formatMmSs(sec)}", color = palette.textSecondary, fontSize = 10.sp, maxLines = 1)
                     }
                 }
             }
@@ -594,31 +666,41 @@ private fun LapsSection(laps: List<LapEntity>) {
     if (laps.isEmpty()) return
     val palette = LocalBikeUiPalette.current
     Text(stringResource(R.string.detail_laps), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = palette.textPrimary)
-    Card(colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(12.dp)) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .border(1.dp, palette.border, RoundedCornerShape(12.dp))
-                .horizontalScroll(rememberScrollState())
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                LapHeaderCell(stringResource(R.string.detail_lap_no), 36.dp)
-                LapHeaderCell(stringResource(R.string.detail_lap_time), 72.dp)
-                LapHeaderCell(stringResource(R.string.detail_lap_distance), 72.dp)
-                LapHeaderCell(stringResource(R.string.detail_lap_avg_speed), 82.dp)
-                LapHeaderCell(stringResource(R.string.detail_lap_avg_hr), 72.dp)
-                LapHeaderCell(stringResource(R.string.detail_lap_avg_power), 82.dp)
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        laps.forEachIndexed { index, lap ->
+            val lapColor = when {
+                (lap.avgPowerWatts ?: 0) >= 250 -> Color(0xFFF9A825)
+                (lap.avgHeartRateBpm ?: 0) >= 160 -> Color(0xFFE53935)
+                else -> palette.accent
             }
-            laps.forEach { lap ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    LapCell(lap.lapNumber.toString(), 36.dp, palette.textPrimary, FontWeight.SemiBold)
-                    LapCell(formatDuration(lap.durationSec * 1000L), 72.dp)
-                    LapCell(String.format(Locale.US, "%.2f %s", lap.distanceMeters / 1000.0, stringResource(R.string.unit_km)), 72.dp)
-                    LapCell(String.format(Locale.US, "%.1f %s", lap.avgSpeedKmh, stringResource(R.string.unit_kmh)), 82.dp)
-                    LapCell(lap.avgHeartRateBpm?.let { "$it ${stringResource(R.string.unit_bpm)}" } ?: "--", 72.dp)
-                    LapCell(lap.avgPowerWatts?.let { "$it ${stringResource(R.string.unit_w)}" } ?: "--", 82.dp)
+            Card(colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(14.dp)) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, lapColor.copy(alpha = 0.28f), RoundedCornerShape(14.dp))
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        Modifier.size(36.dp).background(lapColor.copy(alpha = 0.16f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("${index + 1}", color = lapColor, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
+                    }
+                    Column(Modifier.weight(1f)) {
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("${stringResource(R.string.detail_lap_no)} ${lap.lapNumber}", color = palette.textSecondary, fontSize = 11.sp)
+                            Text(formatDuration(lap.durationSec * 1000L), color = palette.textPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        }
+                        Spacer(Modifier.height(6.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                            MiniMetric(stringResource(R.string.detail_lap_distance), String.format(Locale.US, "%.2f", lap.distanceMeters / 1000.0), stringResource(R.string.unit_km), lapColor, palette)
+                            MiniMetric(stringResource(R.string.detail_lap_avg_speed), String.format(Locale.US, "%.1f", lap.avgSpeedKmh), stringResource(R.string.unit_kmh), lapColor, palette)
+                            MiniMetric(stringResource(R.string.detail_lap_avg_hr), lap.avgHeartRateBpm?.toString() ?: "--", stringResource(R.string.unit_bpm), lapColor, palette)
+                            MiniMetric(stringResource(R.string.detail_lap_avg_power), lap.avgPowerWatts?.toString() ?: "--", stringResource(R.string.unit_w), lapColor, palette)
+                        }
+                    }
                 }
             }
         }
@@ -642,24 +724,48 @@ private fun LapCell(
 }
 
 @Composable
-private fun ChartsSection(points: List<TrackPointEntity>) {
+private fun ChartsSection(points: List<TrackPointEntity>, laps: List<LapEntity>) {
     val palette = LocalBikeUiPalette.current
+    val context = LocalContext.current
+    val app = context.applicationContext as BikeApplication
+    val maxHr by app.cyclingSettings.athleteMaxHr.collectAsStateWithLifecycle()
+    val restHr by app.cyclingSettings.athleteRestingHr.collectAsStateWithLifecycle()
+    val ftp by app.cyclingSettings.athleteFtpWatts.collectAsStateWithLifecycle()
     val series = remember(points) { buildDistanceSeries(points) }
     if (series.isEmpty()) {
         Text(stringResource(R.string.detail_no_chart_data), color = palette.textSecondary)
         return
     }
     Text(stringResource(R.string.detail_charts_by_distance), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = palette.textPrimary)
+
+    // Фоновые полосы зон и вертикальные отметки кругов
+    val hrBands = remember(maxHr, restHr) {
+        TrainingAnalytics.hrZones(maxHr, restHr).drop(1).map { it.minBpm.toFloat() to Color(it.colorArgb.toInt()) }
+    }
+    val pwrBands = remember(ftp) {
+        TrainingAnalytics.powerZones(ftp).drop(1).map { it.minWatts.toFloat() to Color(it.colorArgb.toInt()) }
+    }
+    val lapMarks = remember(laps, series) {
+        var cum = 0f
+        val marks = mutableListOf<Float>()
+        laps.dropLast(1).forEach { lap ->
+            cum += lap.distanceMeters.toFloat() / 1000f
+            if (cum > 0f) marks.add(cum)
+        }
+        val maxDist = series.maxOf { it.distanceKm }
+        marks.filter { it <= maxDist }
+    }
+
     val speedData = series.mapNotNull { s -> s.speedKmh?.let { s.distanceKm to it } }
     val hrData = series.mapNotNull { s -> s.heartRateBpm?.let { s.distanceKm to it.toFloat() } }
     val altData = series.mapNotNull { s -> s.altitudeM?.let { s.distanceKm to it.toFloat() } }
     val pwrData = series.mapNotNull { s -> s.powerWatts?.let { s.distanceKm to it.toFloat() } }
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        if (speedData.isNotEmpty()) LineChartCard(stringResource(R.string.chart_speed), speedData, Color(0xFF2E7DD7), Icons.Filled.Speed, stringResource(R.string.unit_kmh))
-        if (hrData.isNotEmpty()) LineChartCard(stringResource(R.string.chart_hr), hrData, Color(0xFFE53935), Icons.Filled.Favorite, stringResource(R.string.unit_bpm))
-        if (pwrData.isNotEmpty()) LineChartCard(stringResource(R.string.chart_power), pwrData, Color(0xFFF9A825), Icons.Filled.Bolt, stringResource(R.string.unit_w))
-        if (altData.isNotEmpty()) LineChartCard(stringResource(R.string.chart_altitude), altData, Color(0xFF43A047), Icons.Filled.Landscape, stringResource(R.string.unit_m))
+        if (speedData.isNotEmpty()) LineChartCard(stringResource(R.string.chart_speed), speedData, Color(0xFF2E7DD7), Icons.Filled.Speed, stringResource(R.string.unit_kmh), lapMarks = lapMarks)
+        if (hrData.isNotEmpty()) LineChartCard(stringResource(R.string.chart_hr), hrData, Color(0xFFE53935), Icons.Filled.Favorite, stringResource(R.string.unit_bpm), zoneBands = hrBands, lapMarks = lapMarks)
+        if (pwrData.isNotEmpty()) LineChartCard(stringResource(R.string.chart_power), pwrData, Color(0xFFF9A825), Icons.Filled.Bolt, stringResource(R.string.unit_w), zoneBands = pwrBands, lapMarks = lapMarks)
+        if (altData.isNotEmpty()) LineChartCard(stringResource(R.string.chart_altitude), altData, Color(0xFF43A047), Icons.Filled.Landscape, stringResource(R.string.unit_m), lapMarks = lapMarks)
         if (speedData.isEmpty() && hrData.isEmpty() && altData.isEmpty() && pwrData.isEmpty()) {
             Text(stringResource(R.string.detail_no_series_data), color = palette.textSecondary)
         }
@@ -686,7 +792,15 @@ private fun buildDistanceSeries(points: List<TrackPointEntity>): List<DistSample
 }
 
 @Composable
-private fun LineChartCard(title: String, data: List<Pair<Float, Float>>, color: Color, icon: androidx.compose.ui.graphics.vector.ImageVector, unit: String) {
+private fun LineChartCard(
+    title: String,
+    data: List<Pair<Float, Float>>,
+    color: Color,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    unit: String,
+    zoneBands: List<Pair<Float, Color>> = emptyList(),
+    lapMarks: List<Float> = emptyList()
+) {
     val palette = LocalBikeUiPalette.current
     if (data.size < 2) return
     val xs = data.map { it.first }
@@ -699,6 +813,8 @@ private fun LineChartCard(title: String, data: List<Pair<Float, Float>>, color: 
     val yPad = ((maxY - minY).takeIf { it > 0f } ?: 1f) * 0.12f
     val yMin = (minY - yPad).coerceAtLeast(0f)
     val yMax = maxY + yPad
+    val xRange = (maxX - minX).takeIf { it > 1e-6f } ?: 1f
+    val yRange = (yMax - yMin).takeIf { it > 1e-6f } ?: 1f
 
     Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(16.dp)) {
         Column(Modifier.fillMaxWidth().border(1.dp, color.copy(alpha = 0.28f), RoundedCornerShape(16.dp)).padding(12.dp)) {
@@ -721,36 +837,73 @@ private fun LineChartCard(title: String, data: List<Pair<Float, Float>>, color: 
             Canvas(modifier = Modifier.fillMaxWidth().height(150.dp).background(palette.screenBg.copy(alpha = 0.35f), RoundedCornerShape(12.dp)).padding(horizontal = 6.dp, vertical = 8.dp)) {
                 val w = size.width
                 val h = size.height
-                val xRange = (maxX - minX).takeIf { it > 1e-6f } ?: 1f
-                val yRange = (yMax - yMin).takeIf { it > 1e-6f } ?: 1f
-                fun px(p: Pair<Float, Float>): Offset {
-                    val x = ((p.first - minX) / xRange) * w
-                    val y = h - ((p.second - yMin) / yRange) * h
-                    return Offset(x, y.coerceIn(0f, h))
+                fun yFor(v: Float): Float = (h - ((v - yMin) / yRange) * h).coerceIn(0f, h)
+
+                // Фоновые полосы зон (пульс/мощность)
+                zoneBands.forEach { (v, c) ->
+                    val y = yFor(v)
+                    if (y <= h) {
+                        drawRect(
+                            color = c.copy(alpha = 0.10f),
+                            topLeft = Offset(0f, y),
+                            size = androidx.compose.ui.geometry.Size(w, h - y)
+                        )
+                    }
                 }
                 for (i in 0..3) {
                     val gy = h * i / 3f
                     drawLine(palette.border.copy(alpha = 0.45f), Offset(0f, gy), Offset(w, gy), strokeWidth = 1f)
                 }
+                // Вертикальные отметки кругов
+                lapMarks.forEach { mark ->
+                    val x = ((mark - minX) / xRange) * w
+                    if (x in 0f..w) {
+                        drawLine(palette.textSecondary.copy(alpha = 0.5f), Offset(x, 0f), Offset(x, h), strokeWidth = 1.5f)
+                    }
+                }
                 val path = Path().apply {
-                    val first = px(data.first())
+                    val first = px(data.first(), minX, xRange, yMin, yRange, w, h)
                     moveTo(first.x, first.y)
-                    for (i in 1 until data.size) lineTo(px(data[i]).x, px(data[i]).y)
+                    for (i in 1 until data.size) {
+                        val pt = px(data[i], minX, xRange, yMin, yRange, w, h)
+                        lineTo(pt.x, pt.y)
+                    }
                 }
                 val fill = Path().apply {
-                    val first = px(data.first())
+                    val first = px(data.first(), minX, xRange, yMin, yRange, w, h)
                     moveTo(first.x, h)
                     lineTo(first.x, first.y)
-                    for (i in 1 until data.size) { val pt = px(data[i]); lineTo(pt.x, pt.y) }
-                    val last = px(data.last())
-                    lineTo(last.x, h)
+                    for (i in 1 until data.size) {
+                        val pt = px(data[i], minX, xRange, yMin, yRange, w, h)
+                        lineTo(pt.x, pt.y)
+                    }
+                    lineTo(px(data.last(), minX, xRange, yMin, yRange, w, h).x, h)
                     close()
                 }
                 drawPath(fill, brush = androidx.compose.ui.graphics.Brush.verticalGradient(listOf(color.copy(alpha = 0.28f), color.copy(alpha = 0.02f))))
                 drawPath(path, color = color, style = Stroke(width = 4f))
             }
+            Spacer(Modifier.height(2.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(String.format(Locale.US, "%.1f km", minX), fontSize = 10.sp, color = palette.textSecondary)
+                Text(String.format(Locale.US, "%.1f km", maxX), fontSize = 10.sp, color = palette.textSecondary)
+            }
         }
     }
+}
+
+private fun px(
+    p: Pair<Float, Float>,
+    minX: Float,
+    xRange: Float,
+    minY: Float,
+    yRange: Float,
+    w: Float,
+    h: Float
+): Offset {
+    val x = ((p.first - minX) / xRange) * w
+    val y = h - ((p.second - minY) / yRange) * h
+    return Offset(x, y.coerceIn(0f, h))
 }
 
 @Composable
