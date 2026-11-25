@@ -508,19 +508,19 @@ private fun MetricsDashboard(
     val effectiveCompact = compact || compactHeight
     val spacing = if (effectiveCompact) 4.dp else 6.dp
     val speedFont = when {
-        compactHeight && isLandscape -> 28.sp
-        effectiveCompact -> 36.sp
-        else -> 50.sp
+        compactHeight && isLandscape -> 30.sp
+        effectiveCompact -> 38.sp
+        else -> 52.sp
     }
     val speedLine = when {
-        compactHeight && isLandscape -> 32.sp
-        effectiveCompact -> 42.sp
-        else -> 58.sp
+        compactHeight && isLandscape -> 34.sp
+        effectiveCompact -> 44.sp
+        else -> 60.sp
     }
     val tileValueFont = when {
-        compactHeight && isLandscape -> 17.sp
-        effectiveCompact -> 19.sp
-        else -> 22.sp
+        compactHeight && isLandscape -> 19.sp
+        effectiveCompact -> 21.sp
+        else -> 24.sp
     }
     Column(
         modifier = modifier.fillMaxWidth(),
