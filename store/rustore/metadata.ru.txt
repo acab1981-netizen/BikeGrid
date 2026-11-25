@@ -1,28 +1,39 @@
-METADATA ДЛЯ RuStore — BikeGrid 1.0.7
+METADATA ДЛЯ RuStore — BikeGrid 1.0.10
 
 Название: BikeGrid
 Краткое описание: см. short_description.ru.txt
 Полное описание: см. description.ru.txt
+Что нового: см. changelog.ru.txt
 Политика конфиденциальности: https://acab1981-netizen.github.io/BikeGrid/
 
-Категория: Спорт и фитнес (предполагаемая; альтернатива — Здоровье и фитнес)
+Категория: Спорт и фитнес (альтернатива — Здоровье и фитнес)
 Возрастной рейтинг: 0+ (нет рекламы, насилия, контента для взрослых и покупок внутри приложения)
 Тип приложения: Бесплатное, без рекламы и без покупок
 
 Ключевые слова / теги:
-велокомпьютер, велосипед, GPS, тренировки, карта, маршруты, датчики пульса, мощность, FTMS, велостанок, интервальные тренировки, анализ тренировок, Health Connect, офлайн-карты
+велокомпьютер, велосипед, GPS, тренировки, карта, маршруты, датчики пульса, мощность, FTMS, велостанок, интервальные тренировки, анализ тренировок, Health Connect, офлайн-карты, уклон, средняя мощность
 
 Разработчик: BikeApp
-Адрес сайта: [указать при наличии]
+Адрес сайта: https://acab1981-netizen.github.io/BikeGrid/
 E-mail поддержки: vikaweb@mail.ru
 
 Технические данные:
 • Пакет: com.mybike.computer
-• Версия: 1.0.7 (versionCode 8)
+• Версия: 1.0.10 (versionCode 11)
 • Минимальная Android: 9 (API 28), targetSdk 35
-• Размер APK: 5 441 243 байт
-• SHA256: DB0FEFB5A26502BE3CAC7A71C10C413CE0DE063645A9EA8C3BB1E954377AC9D2
+• Размер APK: 5 426 647 байт
+• SHA256: 08F2FEE7BB27D85AB6268785175E2F341F83E9CA1F48F5E91088A512CA47EEA3
 • Подпись: APK Signature Scheme v2, алиас rustore-key, RSA 2048
 • Отпечаток сертификата SHA-256: F9:63:6E:52:3C:A4:7E:04:68:D6:CD:F5:0F:0E:8A:68:9A:FC:2D:81:E9:E7:89:EB:9C:87:CC:90:00:04:6B:35
 
-Скриншоты: добавляются разработчиком самостоятельно.
+Скриншоты для консоли: docs/screenshots/
+• after_dashboard_full.png — экран данных с крупными плитками
+• after_mode_filter.png — разделение режимов (бег/ходьба)
+• after_computer.png — велокомпьютер во время тренировки
+• after_history_list.png — список тренировок
+• after_hero.png — шапка тренировки
+• after_analytics.png — зоны и аналитика нагрузки
+• after_max_power.png — максимальная мощность
+• before_trainer.jpg — для сравнения «было»
+
+APK для загрузки: https://github.com/acab1981-netizen/BikeGrid/releases/download/v1.0.10/BikeGrid-1.0.10-release.apk
