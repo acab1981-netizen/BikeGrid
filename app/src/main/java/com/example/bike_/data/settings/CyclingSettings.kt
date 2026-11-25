@@ -278,7 +278,17 @@ class CyclingSettings(context: Context) {
         val raw = prefs.getString(KEY_DASHBOARD_FIELDS, null)
         if (raw.isNullOrBlank()) return DEFAULT_DASHBOARD_FIELDS
         val parsed = raw.split(",").map { it.trim() }.filter { it.isNotEmpty() && it in ALL_DASHBOARD_FIELDS }
-        return if (parsed.isEmpty()) DEFAULT_DASHBOARD_FIELDS else parsed
+        val base = if (parsed.isEmpty()) DEFAULT_DASHBOARD_FIELDS else parsed
+        // Одноразовая миграция: добавляем новые велосипедные поля в уже сохранённый набор.
+        if (!prefs.getBoolean(KEY_DASHBOARD_FIELDS_V2, false)) {
+            val merged = base + listOf("avg_power", "grade").filter { it !in base }
+            prefs.edit()
+                .putString(KEY_DASHBOARD_FIELDS, merged.joinToString(","))
+                .putBoolean(KEY_DASHBOARD_FIELDS_V2, true)
+                .apply()
+            return merged
+        }
+        return base
     }
 
     /** Re-reads persisted values after a settings restore so the UI updates without an app restart. */
@@ -333,6 +343,7 @@ class CyclingSettings(context: Context) {
         private const val KEY_WHEEL_CIRCUMFERENCE_MM = "wheel_circumference_mm"
         private const val KEY_BATTERY_OPT_PROMPT_SHOWN = "battery_opt_prompt_shown"
         private const val KEY_DASHBOARD_FIELDS = "dashboard_fields"
+        private const val KEY_DASHBOARD_FIELDS_V2 = "dashboard_fields_v2"
         private const val KEY_UI_THEME = "ui_theme"
         private const val KEY_UI_ACCENT = "ui_accent"
         private const val KEY_UI_DEFAULT_VIEW = "ui_default_view"
@@ -370,11 +381,11 @@ class CyclingSettings(context: Context) {
 
         val ALL_DASHBOARD_FIELDS = listOf(
             "distance", "time", "moving_time", "avg_speed", "max_speed",
-            "heart_rate", "cadence", "power", "elevation", "lap",
-            "steps", "step_cadence", "pace"
+            "heart_rate", "cadence", "power", "avg_power", "grade",
+            "elevation", "lap", "steps", "step_cadence", "pace"
         )
         val DEFAULT_DASHBOARD_FIELDS = listOf(
-            "distance", "time", "heart_rate", "cadence", "power", "avg_speed"
+            "distance", "time", "heart_rate", "cadence", "power", "avg_power", "grade", "avg_speed"
         )
 
         fun dashboardFieldLabel(key: String): String = when (key) {
@@ -386,6 +397,8 @@ class CyclingSettings(context: Context) {
             "heart_rate" -> "Heart rate"
             "cadence" -> "Cadence"
             "power" -> "Power"
+            "avg_power" -> "Avg power"
+            "grade" -> "Grade"
             "elevation" -> "Elevation gain"
             "lap" -> "Current lap"
             "steps" -> "Steps"

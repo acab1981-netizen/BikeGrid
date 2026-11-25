@@ -647,6 +647,20 @@ private data class MetricTile(
     val zoneColor: Color? = null
 )
 
+/** Текущий уклон по двум последним точкам с высотой. */
+private fun currentGradePercent(points: List<TrackLatLng>): Float? {
+    val withAlt = points.filter { it.altitudeMeters != null }
+    if (withAlt.size < 2) return null
+    val a = withAlt[withAlt.size - 2]
+    val b = withAlt[withAlt.size - 1]
+    val result = FloatArray(1)
+    android.location.Location.distanceBetween(a.latitude, a.longitude, b.latitude, b.longitude, result)
+    val distanceM = result[0].toDouble()
+    if (distanceM < 1.0) return null
+    val grade = ((b.altitudeMeters!! - a.altitudeMeters!!) / distanceM) * 100.0
+    return grade.coerceIn(-99.0, 99.0).toFloat()
+}
+
 @Composable
 private fun metricTileFor(key: String, m: WorkoutMetrics): MetricTile? {
     return when (key) {
@@ -671,7 +685,13 @@ private fun metricTileFor(key: String, m: WorkoutMetrics): MetricTile? {
             val displayPower = m.smoothedPower3sWatts ?: m.powerWatts
             MetricTile(stringResource(R.string.metric_power), displayPower?.toString() ?: "--", stringResource(R.string.unit_w), zoneLabel, zoneColor)
         }
+        "avg_power" -> MetricTile(stringResource(R.string.metric_avg_power), m.avgPowerWatts?.toString() ?: "--", stringResource(R.string.unit_w))
         "elevation" -> MetricTile(stringResource(R.string.metric_elevation), String.format(Locale.US, "%.0f", m.elevationGainMeters), stringResource(R.string.unit_m))
+        "grade" -> MetricTile(
+            stringResource(R.string.metric_grade),
+            currentGradePercent(m.trackPoints)?.let { String.format(Locale.US, "%+.1f", it) } ?: "--",
+            stringResource(R.string.unit_percent)
+        )
         "steps" -> MetricTile(stringResource(R.string.metric_steps), m.steps.toString(), stringResource(R.string.unit_steps))
         "step_cadence" -> MetricTile(stringResource(R.string.metric_step_cadence), m.stepCadenceSpm.toString(), stringResource(R.string.unit_spm))
         "pace" -> MetricTile(stringResource(R.string.metric_pace), formatPace(m.averageSpeedKmh), stringResource(R.string.unit_min_per_km))
@@ -1669,7 +1689,7 @@ private fun dashboardFieldsForType(fields: List<String>, isFootWorkout: Boolean)
     fields.filter { key ->
         when (key) {
             // Велосипедные метрики
-            "cadence", "power" -> !isFootWorkout
+            "cadence", "power", "avg_power", "grade" -> !isFootWorkout
             // Метрики шагов — только для бега/ходьбы; темп показываем во всех режимах
             "steps", "step_cadence" -> isFootWorkout
             else -> true
@@ -1729,6 +1749,8 @@ private fun bikeDashboardFieldLabel(key: String): String = when (key) {
     "heart_rate" -> stringResource(R.string.metric_heart_rate)
     "cadence" -> stringResource(R.string.metric_cadence)
     "power" -> stringResource(R.string.metric_power)
+    "avg_power" -> stringResource(R.string.metric_avg_power)
+    "grade" -> stringResource(R.string.metric_grade)
     "elevation" -> stringResource(R.string.metric_elevation)
     "lap" -> stringResource(R.string.metric_lap)
     "steps" -> stringResource(R.string.metric_steps)

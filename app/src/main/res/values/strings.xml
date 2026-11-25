@@ -114,6 +114,9 @@
     <string name="metric_hr">Heart rate</string>
     <string name="metric_cadence">Cadence</string>
     <string name="metric_power">Power</string>
+    <string name="metric_avg_power">Avg power</string>
+    <string name="metric_grade">Grade</string>
+    <string name="unit_percent">%</string>
     <string name="metric_elevation">Elevation gain</string>
     <string name="metric_lap">Current lap</string>
 

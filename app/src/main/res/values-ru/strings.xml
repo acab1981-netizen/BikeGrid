@@ -113,6 +113,9 @@
     <string name="metric_heart_rate">Пульс</string>
     <string name="metric_cadence">Каденс</string>
     <string name="metric_power">Мощность</string>
+    <string name="metric_avg_power">Ср. мощность</string>
+    <string name="metric_grade">Уклон</string>
+    <string name="unit_percent">%</string>
     <string name="metric_elevation">Набор высоты</string>
     <string name="metric_lap">Текущий круг</string>
 
