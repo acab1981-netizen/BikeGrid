@@ -9,7 +9,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -218,7 +217,7 @@ private fun MainApp() {
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar(modifier = Modifier.height(52.dp)) {
+                NavigationBar {
                     CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
                         tabs.forEach { tab ->
                             val selected = currentRoute == tab.route
@@ -232,7 +231,6 @@ private fun MainApp() {
                                         restoreState = true
                                     }
                                 },
-                                modifier = Modifier.height(48.dp),
                                 icon = {
                                     Icon(
                                         imageVector = when (tab) {
