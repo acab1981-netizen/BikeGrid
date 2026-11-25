@@ -171,6 +171,7 @@ class WorkoutTrackingService : Service() {
     private var hrCount: Int = 0
     private var powerSum: Long = 0L
     private var powerCount: Int = 0
+    private var maxPowerWattsLive: Int = 0
 
     private fun isFootWorkout(): Boolean =
         workoutType == WORKOUT_TYPE_WALKING || workoutType == WORKOUT_TYPE_RUNNING
@@ -494,6 +495,8 @@ class WorkoutTrackingService : Service() {
                         totalSteps = if (isFootWorkout()) finalMetrics.steps else null,
                         caloriesKcal = finalMetrics.caloriesKcal,
                         caloriesSource = finalMetrics.caloriesSource,
+                        avgPowerWatts = finalMetrics.avgPowerWatts,
+                        maxPowerWatts = finalMetrics.maxPowerWatts,
                         normalizedPowerWatts = finalMetrics.normalizedPowerWatts,
                         intensityFactor = finalMetrics.intensityFactor,
                         trainingStressScore = finalMetrics.trainingStressScore,
@@ -604,7 +607,7 @@ class WorkoutTrackingService : Service() {
         powerWindow3s.clear()
         smoothedPower3sWatts = null
         hrSum = 0L; hrCount = 0
-        powerSum = 0L; powerCount = 0
+        powerSum = 0L; powerCount = 0; maxPowerWattsLive = 0
     }
 
     private fun resetLapAccumulators() {
@@ -1114,6 +1117,7 @@ class WorkoutTrackingService : Service() {
             powerSamplesWatts.add(pc)
             powerSum += pc
             powerCount++
+            if (pc > maxPowerWattsLive) maxPowerWattsLive = pc
             lapPowerSum += pc
             lapPowerCount++
             lapPowerSamples.add(pc)
@@ -1190,6 +1194,8 @@ class WorkoutTrackingService : Service() {
             routeProgressDistanceMeters = routeProgressDistanceMeters,
             routeBearingToReturnDeg = routeBearingToReturnDeg,
             smoothedPower3sWatts = smoothedPower3sWatts,
+            avgPowerWatts = avgPower,
+            maxPowerWatts = maxPowerWattsLive.takeIf { it > 0 },
             currentHrZone = hrZoneIdx?.plus(1),
             currentPowerZone = pwrZoneIdx?.plus(1),
             caloriesKcal = calories,
@@ -1356,8 +1362,11 @@ class WorkoutTrackingService : Service() {
             playStepBeep()
             if (remaining == 1) structuredWorkoutBeepedStep = idx
         }
-        if (structuredWorkoutElapsedSec >= totalDur) {
-            // keep showing completed state; do not auto-stop workout
+        if (structuredWorkoutElapsedSec >= totalDur && !isStopping) {
+            // План тренировки закончился — завершаем запись и показываем уведомление.
+            playStepBeep()
+            notifyWorkoutComplete(currentMetrics())
+            stopWorkout()
         }
     }
 
@@ -1670,6 +1679,29 @@ class WorkoutTrackingService : Service() {
         manager.notify(NOTIFICATION_ID, buildNotification(metrics))
     }
 
+    private fun notifyWorkoutComplete(metrics: WorkoutMetrics) {
+        val distanceText = String.format(Locale.US, "%.2f", metrics.distanceMeters / 1000.0)
+        val timeText = formatDuration(metrics.elapsedTimeMs)
+        val openIntent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT or
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+        val notification = NotificationCompat.Builder(this, COMPLETE_CHANNEL_ID)
+            .setContentTitle(getString(R.string.workout_complete_title))
+            .setContentText(getString(R.string.workout_complete_text, distanceText, timeText))
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentIntent(PendingIntent.getActivity(this, 1, openIntent, pendingIntentFlags))
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(android.app.Notification.DEFAULT_SOUND or android.app.Notification.DEFAULT_VIBRATE)
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .build()
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+            .notify(COMPLETE_NOTIFICATION_ID, notification)
+    }
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -1683,6 +1715,15 @@ class WorkoutTrackingService : Service() {
             }
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)
+            val completeChannel = NotificationChannel(
+                COMPLETE_CHANNEL_ID,
+                getString(R.string.workout_complete_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = getString(R.string.workout_complete_channel_description)
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            }
+            manager.createNotificationChannel(completeChannel)
         }
     }
 
@@ -1757,6 +1798,8 @@ class WorkoutTrackingService : Service() {
 
         private const val CHANNEL_ID = "workout_tracking"
         private const val NOTIFICATION_ID = 2001
+        private const val COMPLETE_CHANNEL_ID = "workout_complete"
+        private const val COMPLETE_NOTIFICATION_ID = 2002
         private const val TICK_INTERVAL_MS = 1000L
 
         // Location request (responsive for quick auto-pause/resume, still reasonable for battery)

@@ -22,6 +22,10 @@
     <!-- Workout tracking foreground service -->
     <string name="tracking_channel_name">Запись тренировки</string>
     <string name="tracking_channel_description">Постоянное уведомление с временем и дистанцией во время тренировки</string>
+    <string name="workout_complete_channel_name">Завершение тренировки</string>
+    <string name="workout_complete_channel_description">Уведомление об окончании тренировки по плану</string>
+    <string name="workout_complete_title">Тренировка завершена</string>
+    <string name="workout_complete_text">Дистанция %1$s км · время %2$s</string>
     <string name="tracking_notification_title">Тренировка</string>
     <string name="tracking_notification_text">Идёт запись маршрута и метрик</string>
     <string name="tracking_notification_time_distance">Время: %1$s · Дистанция: %2$s км</string>
@@ -164,6 +168,8 @@
     <string name="detail_hr_avg_max">Ср. / макс. пульс</string>
     <string name="detail_cadence_avg_max">Ср. / макс. каденс</string>
     <string name="detail_power_avg_max">Ср. / макс. мощность</string>
+    <string name="detail_max_power">Макс. мощность</string>
+    <string name="detail_avg_power">Ср. мощность</string>
     <string name="detail_no_chart_data">Недостаточно данных для графиков.</string>
     <string name="detail_charts_by_distance">Графики по дистанции</string>
     <string name="detail_no_series_data">Нет данных скорости/пульса/высоты для графиков.</string>

@@ -167,7 +167,7 @@ fun WorkoutDetailScreen(
             RouteMap(points = points)
             ZoneDistributionCard(w)
             GarminMetricHighlights(w, points)
-            SummaryTable(w)
+            SummaryTable(w, points)
             LoadAnalyticsSection(w)
             TimeInZonesSection(w)
             LapsSection(laps = laps)
@@ -365,16 +365,21 @@ private data class SummaryStat(
 )
 
 @Composable
-private fun SummaryTable(w: WorkoutEntity) {
+private fun SummaryTable(w: WorkoutEntity, points: List<TrackPointEntity>) {
     val palette = LocalBikeUiPalette.current
     Text(stringResource(R.string.detail_summary), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = palette.textPrimary)
+    val powerValues = points.mapNotNull { it.powerWatts?.takeIf { p -> p > 0 } }
+    val maxPower = w.maxPowerWatts?.takeIf { it > 0 } ?: powerValues.maxOrNull()
+    val avgPower = w.avgPowerWatts?.takeIf { it > 0 }
+        ?: powerValues.takeIf { it.isNotEmpty() }?.average()?.toInt()
     val stats = buildList {
         add(SummaryStat(stringResource(R.string.detail_moving_time), formatDuration(w.movingTimeMs), "", Icons.Filled.Timer, palette.accent))
         add(SummaryStat(stringResource(R.string.detail_max_speed), String.format(Locale.US, "%.1f", w.maxSpeedKmh), stringResource(R.string.unit_kmh), Icons.Filled.Speed, Color(0xFF2E7DD7)))
         add(SummaryStat(stringResource(R.string.detail_elevation_gain), String.format(Locale.US, "%.0f", w.elevationGainMeters), stringResource(R.string.unit_m), Icons.Filled.Landscape, Color(0xFF43A047)))
         w.avgHeartRateBpm?.let { add(SummaryStat(stringResource(R.string.detail_hr_avg_max), "$it / ${w.maxHeartRateBpm ?: "-"}", stringResource(R.string.unit_bpm), Icons.Filled.Favorite, Color(0xFFE53935))) }
         w.avgCadenceRpm?.let { add(SummaryStat(stringResource(R.string.detail_cadence_avg_max), String.format(Locale.US, "%.0f / %.0f", it, w.maxCadenceRpm ?: 0f), stringResource(R.string.unit_rpm), null, Color(0xFF7E57C2))) }
-        w.avgPowerWatts?.let { add(SummaryStat(stringResource(R.string.detail_power_avg_max), "$it / ${w.maxPowerWatts ?: "-"}", stringResource(R.string.unit_w), Icons.Filled.Bolt, Color(0xFFF9A825))) }
+        avgPower?.let { add(SummaryStat(stringResource(R.string.detail_avg_power), "$it", stringResource(R.string.unit_w), Icons.Filled.Bolt, Color(0xFFF9A825))) }
+        maxPower?.let { add(SummaryStat(stringResource(R.string.detail_max_power), "$it", stringResource(R.string.unit_w), Icons.Filled.Bolt, Color(0xFFEF6C00))) }
         w.totalSteps?.takeIf { it > 0 }?.let { add(SummaryStat(stringResource(R.string.detail_steps), "$it", stringResource(R.string.unit_steps), null, Color(0xFF2E7D32))) }
         w.avgStepCadenceSpm?.let { add(SummaryStat(stringResource(R.string.detail_avg_step_cadence), "$it", stringResource(R.string.unit_spm), null, Color(0xFF26A69A))) }
     }

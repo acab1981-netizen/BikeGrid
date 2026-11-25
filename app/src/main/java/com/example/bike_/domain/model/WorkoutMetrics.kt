@@ -86,6 +86,8 @@ data class WorkoutMetrics(
     val routeBearingToReturnDeg: Float? = null,
     // Advanced analytics (live)
     val smoothedPower3sWatts: Int? = null,
+    val avgPowerWatts: Int? = null,
+    val maxPowerWatts: Int? = null,
     val currentHrZone: Int? = null,
     val currentPowerZone: Int? = null,
     val caloriesKcal: Int = 0,

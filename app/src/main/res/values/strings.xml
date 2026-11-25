@@ -22,6 +22,10 @@
     <!-- Workout tracking foreground service -->
     <string name="tracking_channel_name">Workout tracking</string>
     <string name="tracking_channel_description">Ongoing notification with time and distance during a workout</string>
+    <string name="workout_complete_channel_name">Workout complete</string>
+    <string name="workout_complete_channel_description">Notification when a planned workout finishes</string>
+    <string name="workout_complete_title">Workout complete</string>
+    <string name="workout_complete_text">Distance %1$s km · time %2$s</string>
     <string name="tracking_notification_title">Workout</string>
     <string name="tracking_notification_text">Recording route and metrics</string>
     <string name="tracking_notification_time_distance">Time: %1$s · Distance: %2$s km</string>
@@ -165,6 +169,8 @@
     <string name="detail_hr_avg_max">Avg / max HR</string>
     <string name="detail_cadence_avg_max">Avg / max cadence</string>
     <string name="detail_power_avg_max">Avg / max power</string>
+    <string name="detail_max_power">Max power</string>
+    <string name="detail_avg_power">Avg power</string>
     <string name="detail_no_chart_data">Not enough data for charts.</string>
     <string name="detail_charts_by_distance">Charts by distance</string>
     <string name="detail_no_series_data">No speed/heart rate/altitude data for charts.</string>
