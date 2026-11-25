@@ -9,24 +9,30 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -212,32 +218,36 @@ private fun MainApp() {
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar {
-                    tabs.forEach { tab ->
-                        val selected = currentRoute == tab.route
-                        val label = stringResource(tab.labelRes)
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = {
-                                navController.navigate(tab.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = when (tab) {
-                                        RootTab.Sensors -> Icons.Filled.Bluetooth
-                                        RootTab.Computer -> Icons.Filled.Speed
-                                        RootTab.History -> Icons.Filled.History
-                                        RootTab.Stats -> Icons.AutoMirrored.Filled.ShowChart
-                                    },
-                                    contentDescription = label
-                                )
-                            },
-                            label = { Text(label) }
-                        )
+                NavigationBar(modifier = Modifier.height(52.dp)) {
+                    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+                        tabs.forEach { tab ->
+                            val selected = currentRoute == tab.route
+                            val label = stringResource(tab.labelRes)
+                            NavigationBarItem(
+                                selected = selected,
+                                onClick = {
+                                    navController.navigate(tab.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                modifier = Modifier.height(48.dp),
+                                icon = {
+                                    Icon(
+                                        imageVector = when (tab) {
+                                            RootTab.Sensors -> Icons.Filled.Bluetooth
+                                            RootTab.Computer -> Icons.Filled.Speed
+                                            RootTab.History -> Icons.Filled.History
+                                            RootTab.Stats -> Icons.AutoMirrored.Filled.ShowChart
+                                        },
+                                        contentDescription = label,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                },
+                                label = { Text(label, fontSize = 10.sp, maxLines = 1) }
+                            )
+                        }
                     }
                 }
             }
