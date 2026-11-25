@@ -509,18 +509,18 @@ private fun MetricsDashboard(
     val spacing = if (effectiveCompact) 4.dp else 6.dp
     val speedFont = when {
         compactHeight && isLandscape -> 28.sp
-        effectiveCompact -> 34.sp
-        else -> 46.sp
+        effectiveCompact -> 36.sp
+        else -> 50.sp
     }
     val speedLine = when {
         compactHeight && isLandscape -> 32.sp
-        effectiveCompact -> 40.sp
-        else -> 54.sp
+        effectiveCompact -> 42.sp
+        else -> 58.sp
     }
     val tileValueFont = when {
-        compactHeight && isLandscape -> 16.sp
-        effectiveCompact -> 18.sp
-        else -> 20.sp
+        compactHeight && isLandscape -> 17.sp
+        effectiveCompact -> 19.sp
+        else -> 22.sp
     }
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -535,7 +535,7 @@ private fun MetricsDashboard(
                 Modifier
                     .fillMaxWidth()
                     .border(1.dp, palette.border, RoundedCornerShape(14.dp))
-                    .padding(vertical = if (effectiveCompact) 4.dp else 8.dp, horizontal = 10.dp),
+                    .padding(vertical = if (effectiveCompact) 5.dp else 10.dp, horizontal = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(stringResource(R.string.bc_speed), color = palette.textSecondary, fontWeight = FontWeight.SemiBold, fontSize = 11.sp, letterSpacing = 0.8.sp)
@@ -587,18 +587,21 @@ private fun MetricsDashboard(
                         val bg by animateColorAsState(targetBg, label = "tileBg_${tile.label}")
                         val border by animateColorAsState(targetBorder, label = "tileBorder_${tile.label}")
                         Card(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .heightIn(min = if (effectiveCompact) 66.dp else 78.dp),
                             colors = CardDefaults.cardColors(containerColor = bg),
-                            shape = RoundedCornerShape(10.dp)
+                            shape = RoundedCornerShape(11.dp)
                         ) {
                             Column(
                                 Modifier
                                     .fillMaxWidth()
-                                    .border(1.dp, border, RoundedCornerShape(10.dp))
-                                    .padding(horizontal = if (effectiveCompact) 8.dp else 10.dp, vertical = if (effectiveCompact) 6.dp else 8.dp)
+                                    .border(1.dp, border, RoundedCornerShape(11.dp))
+                                    .padding(horizontal = 10.dp, vertical = if (effectiveCompact) 6.dp else 9.dp)
                             ) {
-                                Text(tile.label, fontSize = 11.sp, color = palette.textSecondary, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                                Text(tile.label, fontSize = 12.sp, color = palette.textSecondary, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Spacer(Modifier.height(3.dp))
+                                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(tile.value, fontSize = tileValueFont, fontWeight = FontWeight.Bold, color = tile.zoneColor ?: palette.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis, lineHeight = tileValueFont)
                                     if (tile.unit.isNotBlank()) {
                                         Text(tile.unit, fontSize = 10.sp, color = palette.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(bottom = 1.dp))
