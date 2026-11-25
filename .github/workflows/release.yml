@@ -69,6 +69,11 @@ jobs:
         run: |
           set -euo pipefail
           TAG="${BRANCH#notes/}"
-          bash .github/scripts/release-notes.sh "$TAG"
+          # Если в репозитории лежит готовое описание (со скриншотами) — используем его.
+          if [ -f .github/release-body.md ]; then
+            cp .github/release-body.md release-body.md
+          else
+            bash .github/scripts/release-notes.sh "$TAG"
+          fi
           gh release edit "$TAG" --title "BikeGrid ${TAG#v}" --notes-file release-body.md
           echo "Текст релиза $TAG обновлён."

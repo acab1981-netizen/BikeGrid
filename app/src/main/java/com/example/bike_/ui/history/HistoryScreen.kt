@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,9 +32,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -235,11 +238,11 @@ private fun WatchCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
-            Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(16.dp)).padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(16.dp)).padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(stringResource(R.string.watch_card_title), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = palette.textPrimary)
-            Text(stringResource(R.string.watch_card_subtitle), fontSize = 12.sp, color = palette.textSecondary)
+            Text(stringResource(R.string.watch_card_title), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = palette.textPrimary)
+            Text(stringResource(R.string.watch_card_subtitle), fontSize = 11.sp, color = palette.textSecondary)
             if (lastWorkout != null) {
                 Text(
                     stringResource(
@@ -252,21 +255,25 @@ private fun WatchCard(
                 )
             }
             Spacer(Modifier.height(2.dp))
-            Button(
-                onClick = onSend,
-                enabled = lastWorkout != null && state !is HistoryViewModel.WatchUiState.InProgress,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (state is HistoryViewModel.WatchUiState.InProgress) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp,
-                        color = palette.cardBg
-                    )
-                    Spacer(Modifier.size(8.dp))
-                    Text(stringResource(R.string.watch_sending), fontSize = 12.sp)
-                } else {
-                    Text(stringResource(R.string.watch_send), fontSize = 12.sp)
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+                Button(
+                    onClick = onSend,
+                    enabled = lastWorkout != null && state !is HistoryViewModel.WatchUiState.InProgress,
+                    modifier = Modifier.height(28.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 2.dp)
+                ) {
+                    if (state is HistoryViewModel.WatchUiState.InProgress) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(12.dp),
+                            strokeWidth = 2.dp,
+                            color = palette.cardBg
+                        )
+                        Spacer(Modifier.size(4.dp))
+                        Text(stringResource(R.string.watch_sending), fontSize = 10.sp)
+                    } else {
+                        Text(stringResource(R.string.watch_send), fontSize = 10.sp)
+                    }
                 }
             }
             when (state) {
@@ -299,23 +306,29 @@ private fun BackupCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
-            Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(16.dp)).padding(14.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(16.dp)).padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(stringResource(R.string.backup_title), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = palette.textPrimary)
-            Text(stringResource(R.string.backup_subtitle), fontSize = 12.sp, color = palette.textSecondary)
-            Spacer(Modifier.height(4.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(
-                    onClick = onCreate,
-                    enabled = !isBusy,
-                    modifier = Modifier.weight(1f)
-                ) { Text(stringResource(R.string.backup_create), fontSize = 12.sp) }
-                Button(
-                    onClick = onRestore,
-                    enabled = !isBusy,
-                    modifier = Modifier.weight(1f)
-                ) { Text(stringResource(R.string.backup_restore), fontSize = 12.sp) }
+            Text(stringResource(R.string.backup_title), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = palette.textPrimary)
+            Text(stringResource(R.string.backup_subtitle), fontSize = 11.sp, color = palette.textSecondary)
+            Spacer(Modifier.height(2.dp))
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Button(
+                        onClick = onCreate,
+                        enabled = !isBusy,
+                        modifier = Modifier.height(26.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 1.dp)
+                    ) { Text(stringResource(R.string.backup_create), fontSize = 10.sp) }
+                    Button(
+                        onClick = onRestore,
+                        enabled = !isBusy,
+                        modifier = Modifier.height(26.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 1.dp)
+                    ) { Text(stringResource(R.string.backup_restore), fontSize = 10.sp) }
+                }
             }
         }
     }
