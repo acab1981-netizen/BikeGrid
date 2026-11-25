@@ -30,9 +30,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -292,7 +289,10 @@ fun BikeComputerScreen(
 
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             if (selectedTab == 0) {
-                Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     metrics.structuredWorkout?.let { sw ->
                         StructuredWorkoutPlayerCard(
                             state = sw,
@@ -320,7 +320,7 @@ fun BikeComputerScreen(
                         compact = uiCompactCards,
                         palette = palette,
                         onCustomize = { showCustomizeDialog = true },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             } else {
@@ -522,14 +522,8 @@ private fun MetricsDashboard(
         effectiveCompact -> 18.sp
         else -> 20.sp
     }
-    val minTileWidth = when {
-        configuration.screenWidthDp >= 600 -> 140.dp
-        configuration.screenWidthDp >= 390 -> 108.dp
-        else -> 100.dp
-    }
-
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing)
     ) {
         Card(
@@ -579,34 +573,40 @@ private fun MetricsDashboard(
                 }
             }
         } else {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = minTileWidth),
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(if (effectiveCompact) 4.dp else 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(if (effectiveCompact) 4.dp else 6.dp),
-                contentPadding = PaddingValues(bottom = 2.dp)
-            ) {
-                items(tiles, key = { it.label }) { tile ->
-                    val targetBg = tile.zoneColor?.copy(alpha = 0.16f) ?: palette.cardBg
-                    val targetBorder = tile.zoneColor?.copy(alpha = 0.65f) ?: palette.border
-                    val bg by animateColorAsState(targetBg, label = "tileBg_${tile.label}")
-                    val border by animateColorAsState(targetBorder, label = "tileBorder_${tile.label}")
-                    Card(colors = CardDefaults.cardColors(containerColor = bg), shape = RoundedCornerShape(10.dp)) {
-                        Column(
-                            Modifier
-                                .fillMaxWidth()
-                                .border(1.dp, border, RoundedCornerShape(10.dp))
-                                .padding(horizontal = if (effectiveCompact) 8.dp else 10.dp, vertical = if (effectiveCompact) 6.dp else 8.dp)
+            // Обычные строки вместо LazyVerticalGrid: вся вкладка прокручивается целиком,
+            // поэтому все показатели доступны даже при активной тренировке на станке.
+            val tileColumns = if (configuration.screenWidthDp >= 600) 4 else 3
+            for (rowTiles in tiles.chunked(tileColumns)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(spacing)
+                ) {
+                    for (tile in rowTiles) {
+                        val targetBg = tile.zoneColor?.copy(alpha = 0.16f) ?: palette.cardBg
+                        val targetBorder = tile.zoneColor?.copy(alpha = 0.65f) ?: palette.border
+                        val bg by animateColorAsState(targetBg, label = "tileBg_${tile.label}")
+                        val border by animateColorAsState(targetBorder, label = "tileBorder_${tile.label}")
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            colors = CardDefaults.cardColors(containerColor = bg),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text(tile.label, fontSize = 11.sp, color = palette.textSecondary, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                                Text(tile.value, fontSize = tileValueFont, fontWeight = FontWeight.Bold, color = tile.zoneColor ?: palette.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis, lineHeight = tileValueFont)
-                                if (tile.unit.isNotBlank()) {
-                                    Text(tile.unit, fontSize = 10.sp, color = palette.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(bottom = 1.dp))
+                            Column(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .border(1.dp, border, RoundedCornerShape(10.dp))
+                                    .padding(horizontal = if (effectiveCompact) 8.dp else 10.dp, vertical = if (effectiveCompact) 6.dp else 8.dp)
+                            ) {
+                                Text(tile.label, fontSize = 11.sp, color = palette.textSecondary, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                                    Text(tile.value, fontSize = tileValueFont, fontWeight = FontWeight.Bold, color = tile.zoneColor ?: palette.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis, lineHeight = tileValueFont)
+                                    if (tile.unit.isNotBlank()) {
+                                        Text(tile.unit, fontSize = 10.sp, color = palette.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(bottom = 1.dp))
+                                    }
                                 }
-                            }
-                            if (tile.zoneLabel != null) {
-                                Text(tile.zoneLabel, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = tile.zoneColor ?: palette.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                if (tile.zoneLabel != null) {
+                                    Text(tile.zoneLabel, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = tile.zoneColor ?: palette.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                }
                             }
                         }
                     }
@@ -710,11 +710,11 @@ private fun StructuredWorkoutPlayerCard(
     }
 
     Card(colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(14.dp)).padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(14.dp)).padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(state.title, color = palette.textPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Column {
-                    Text(formatDuration(state.stepRemainingSec * 1000L), color = palette.textPrimary, fontSize = 28.sp, fontWeight = FontWeight.ExtraBold)
+                    Text(formatDuration(state.stepRemainingSec * 1000L), color = palette.textPrimary, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
                     Text(targetText, color = palette.textSecondary, fontSize = 12.sp)
                 }
                 Column(horizontalAlignment = Alignment.End) {
@@ -727,7 +727,7 @@ private fun StructuredWorkoutPlayerCard(
             // Mini profile chart
             val steps = state.steps
             if (steps.isNotEmpty()) {
-                androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxWidth().height(56.dp)) {
+                androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxWidth().height(40.dp)) {
                     val n = steps.size
                     val gap = 2f
                     val barW = ((size.width - gap * (n - 1).coerceAtLeast(0)) / n.toFloat()).coerceAtLeast(2f)
@@ -750,10 +750,24 @@ private fun StructuredWorkoutPlayerCard(
                 }
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                OutlinedButton(onClick = onPauseResume, modifier = Modifier.weight(1f)) { Text(if (isPaused) stringResource(R.string.bc_resume) else stringResource(R.string.bc_pause)) }
-                OutlinedButton(onClick = onRepeat, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.sw_repeat_step), maxLines = 1) }
-                OutlinedButton(onClick = onSkip, modifier = Modifier.weight(1f)) { Text(stringResource(R.string.sw_skip), maxLines = 1) }
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                    OutlinedButton(
+                        onClick = onPauseResume,
+                        modifier = Modifier.weight(1f).height(32.dp),
+                        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
+                    ) { Text(if (isPaused) stringResource(R.string.bc_resume) else stringResource(R.string.bc_pause), fontSize = 11.sp, maxLines = 1) }
+                    OutlinedButton(
+                        onClick = onRepeat,
+                        modifier = Modifier.weight(1f).height(32.dp),
+                        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
+                    ) { Text(stringResource(R.string.sw_repeat_step), fontSize = 11.sp, maxLines = 1) }
+                    OutlinedButton(
+                        onClick = onSkip,
+                        modifier = Modifier.weight(1f).height(32.dp),
+                        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
+                    ) { Text(stringResource(R.string.sw_skip), fontSize = 11.sp, maxLines = 1) }
+                }
             }
         }
     }
@@ -782,7 +796,7 @@ private fun SmartTrainerPanel(
         else -> stringResource(R.string.ftms_status_connected)
     }
     Card(colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(14.dp)).padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(14.dp)).padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(stringResource(R.string.ftms_panel_title), color = palette.textPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
@@ -792,21 +806,23 @@ private fun SmartTrainerPanel(
                 }
                 Text(statusText, color = statusColor, fontWeight = FontWeight.SemiBold, fontSize = 12.sp)
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                FilterChip(
-                    selected = metrics.ftmsModeErg,
-                    onClick = onModeErg,
-                    label = { Text(stringResource(R.string.ftms_mode_erg), maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp) },
-                    colors = chipColors(palette),
-                    modifier = Modifier.weight(1f)
-                )
-                FilterChip(
-                    selected = !metrics.ftmsModeErg,
-                    onClick = onModeResistance,
-                    label = { Text(stringResource(R.string.ftms_mode_resistance), maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 12.sp) },
-                    colors = chipColors(palette),
-                    modifier = Modifier.weight(1f)
-                )
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                    FilterChip(
+                        selected = metrics.ftmsModeErg,
+                        onClick = onModeErg,
+                        label = { Text(stringResource(R.string.ftms_mode_erg), maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 11.sp) },
+                        colors = chipColors(palette),
+                        modifier = Modifier.weight(1f).height(30.dp)
+                    )
+                    FilterChip(
+                        selected = !metrics.ftmsModeErg,
+                        onClick = onModeResistance,
+                        label = { Text(stringResource(R.string.ftms_mode_resistance), maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 11.sp) },
+                        colors = chipColors(palette),
+                        modifier = Modifier.weight(1f).height(30.dp)
+                    )
+                }
             }
             val targetLabel = if (metrics.ftmsModeErg) {
                 stringResource(R.string.ftms_target_power, metrics.ftmsTargetPowerWatts ?: 0)
@@ -815,12 +831,12 @@ private fun SmartTrainerPanel(
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text(targetLabel, color = palette.textPrimary, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedButton(onClick = onMinus, contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp), modifier = Modifier.heightIn(min = 34.dp)) {
-                        Text(if (metrics.ftmsModeErg) stringResource(R.string.ftms_power_minus) else stringResource(R.string.ftms_res_minus), fontSize = 12.sp)
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    OutlinedButton(onClick = onMinus, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp), modifier = Modifier.height(30.dp)) {
+                        Text(if (metrics.ftmsModeErg) stringResource(R.string.ftms_power_minus) else stringResource(R.string.ftms_res_minus), fontSize = 11.sp)
                     }
-                    OutlinedButton(onClick = onPlus, contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp), modifier = Modifier.heightIn(min = 34.dp)) {
-                        Text(if (metrics.ftmsModeErg) stringResource(R.string.ftms_power_plus) else stringResource(R.string.ftms_res_plus), fontSize = 12.sp)
+                    OutlinedButton(onClick = onPlus, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp), modifier = Modifier.height(30.dp)) {
+                        Text(if (metrics.ftmsModeErg) stringResource(R.string.ftms_power_plus) else stringResource(R.string.ftms_res_plus), fontSize = 11.sp)
                     }
                 }
             }
@@ -1194,56 +1210,70 @@ private fun ControlPanel(
             modifier = Modifier
                 .fillMaxWidth()
                 .border(1.dp, palette.border, RoundedCornerShape(16.dp))
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = 10.dp, vertical = 6.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            if (!metrics.isTracking) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    TypeChip(stringResource(R.string.bc_cycling), WorkoutTrackingService.WORKOUT_TYPE_CYCLING, selectedType, palette) { selectedType = it }
-                    TypeChip(stringResource(R.string.bc_running), WorkoutTrackingService.WORKOUT_TYPE_RUNNING, selectedType, palette) { selectedType = it }
-                    TypeChip(stringResource(R.string.bc_walking), WorkoutTrackingService.WORKOUT_TYPE_WALKING, selectedType, palette) { selectedType = it }
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+                if (!metrics.isTracking) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        TypeChip(stringResource(R.string.bc_cycling), WorkoutTrackingService.WORKOUT_TYPE_CYCLING, selectedType, palette) { selectedType = it }
+                        TypeChip(stringResource(R.string.bc_running), WorkoutTrackingService.WORKOUT_TYPE_RUNNING, selectedType, palette) { selectedType = it }
+                        TypeChip(stringResource(R.string.bc_walking), WorkoutTrackingService.WORKOUT_TYPE_WALKING, selectedType, palette) { selectedType = it }
+                    }
+                    Button(
+                        onClick = { onStart(selectedType) },
+                        modifier = Modifier.fillMaxWidth().height(40.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = palette.accent, contentColor = Color.White)
+                    ) { Text(stringResource(R.string.bc_start), fontSize = 13.sp, fontWeight = FontWeight.Bold) }
+                } else {
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(
+                            onClick = { if (metrics.isAutoPaused) onResume() else onPause() },
+                            modifier = Modifier.weight(1f).height(36.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                        ) { Text(if (metrics.isAutoPaused) stringResource(R.string.bc_resume) else stringResource(R.string.bc_pause), fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                        OutlinedButton(
+                            onClick = onLap,
+                            modifier = Modifier.weight(1f).height(36.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                        ) { Text(stringResource(R.string.bc_lap), fontSize = 12.sp, fontWeight = FontWeight.Bold) }
+                    }
+                    Button(
+                        onClick = onStopRequest,
+                        modifier = Modifier.fillMaxWidth().height(38.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = palette.danger, contentColor = Color.White),
+                        shape = RoundedCornerShape(10.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                    ) { Text(stringResource(R.string.bc_stop), fontSize = 13.sp, fontWeight = FontWeight.Bold) }
                 }
-                Button(
-                    onClick = { onStart(selectedType) },
-                    modifier = Modifier.fillMaxWidth().height(54.dp),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = palette.accent, contentColor = Color.White)
-                ) { Text(stringResource(R.string.bc_start), fontSize = 16.sp, fontWeight = FontWeight.Bold) }
-            } else {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                    OutlinedButton(
-                        onClick = { if (metrics.isAutoPaused) onResume() else onPause() },
-                        modifier = Modifier.weight(1f).height(52.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) { Text(if (metrics.isAutoPaused) stringResource(R.string.bc_resume) else stringResource(R.string.bc_pause), fontWeight = FontWeight.Bold) }
-                    OutlinedButton(
-                        onClick = onLap,
-                        modifier = Modifier.weight(1f).height(52.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) { Text(stringResource(R.string.bc_lap), fontWeight = FontWeight.Bold) }
-                }
-                Button(
-                    onClick = onStopRequest,
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = palette.danger, contentColor = Color.White),
-                    shape = RoundedCornerShape(12.dp)
-                ) { Text(stringResource(R.string.bc_stop), fontSize = 15.sp, fontWeight = FontWeight.Bold) }
             }
         }
     }
 }
 
 @Composable
-private fun TypeChip(label: String, type: String, selected: String, palette: BikeUiPalette, onSelect: (String) -> Unit) {
+private fun TypeChip(
+    label: String,
+    type: String,
+    selected: String,
+    palette: BikeUiPalette,
+    modifier: Modifier = Modifier,
+    onSelect: (String) -> Unit
+) {
     FilterChip(
         selected = selected == type,
         onClick = { onSelect(type) },
-        label = { Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        modifier = modifier.height(30.dp),
+        label = { Text(label, fontSize = 11.sp, maxLines = 1, overflow = TextOverflow.Ellipsis) },
         colors = FilterChipDefaults.filterChipColors(
             containerColor = palette.mutedBg,
             selectedContainerColor = palette.accent.copy(alpha = 0.16f),
