@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Landscape
@@ -411,15 +412,31 @@ private fun SummaryTable(w: WorkoutEntity) {
     }
 }
 
+private data class LoadStat(
+    val title: String,
+    val value: String,
+    val unit: String,
+    val subtitle: String,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
+    val color: Color,
+    val progress: Float
+)
+
 @Composable
 private fun LoadAnalyticsSection(w: WorkoutEntity) {
     val palette = LocalBikeUiPalette.current
-    val hasAny = w.normalizedPowerWatts != null || w.intensityFactor != null || w.trainingStressScore != null || w.caloriesKcal != null
-    if (!hasAny) return
+    if (w.normalizedPowerWatts == null && w.intensityFactor == null && w.trainingStressScore == null && w.caloriesKcal == null) return
     Text(stringResource(R.string.detail_load_analytics), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = palette.textPrimary)
+
+    val tss = w.trainingStressScore ?: 0f
+    val tssColor = when {
+        tss > 300f -> Color(0xFFE53935)
+        tss > 150f -> Color(0xFFF9A825)
+        else -> Color(0xFF43A047)
+    }
     val recovery = when {
-        (w.trainingStressScore ?: 0f) > 300f -> stringResource(R.string.detail_recovery_heavy)
-        (w.trainingStressScore ?: 0f) > 150f -> stringResource(R.string.detail_recovery_medium)
+        tss > 300f -> stringResource(R.string.detail_recovery_heavy)
+        tss > 150f -> stringResource(R.string.detail_recovery_medium)
         else -> stringResource(R.string.detail_recovery_light)
     }
     val kcalLabel = when (w.caloriesSource) {
@@ -427,47 +444,72 @@ private fun LoadAnalyticsSection(w: WorkoutEntity) {
         "HR" -> stringResource(R.string.analytics_kcal_hr)
         else -> ""
     }
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AnalyticsTile(
-                modifier = Modifier.weight(1f),
-                title = if (w.normalizedPowerWatts != null) stringResource(R.string.analytics_np) else stringResource(R.string.analytics_tss),
-                value = if (w.normalizedPowerWatts != null) "${w.normalizedPowerWatts} ${stringResource(R.string.unit_w)}" else String.format(Locale.US, "%.0f", w.trainingStressScore ?: 0f),
-                subtitle = if (w.normalizedPowerWatts != null) "NP" else recovery
-            )
-            AnalyticsTile(
-                modifier = Modifier.weight(1f),
-                title = stringResource(R.string.analytics_if),
-                value = w.intensityFactor?.let { String.format(Locale.US, "%.2f", it) } ?: "--",
-                subtitle = ""
-            )
+    val ifValue = w.intensityFactor ?: 0f
+
+    val stats = buildList {
+        w.normalizedPowerWatts?.let {
+            add(LoadStat(stringResource(R.string.analytics_np), "$it", stringResource(R.string.unit_w), "", Icons.Filled.Bolt, Color(0xFFF9A825), (ifValue / 1.2f).coerceIn(0f, 1f)))
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (w.intensityFactor != null) {
+            add(LoadStat(stringResource(R.string.analytics_if), String.format(Locale.US, "%.2f", ifValue), "", "", Icons.AutoMirrored.Filled.ShowChart, Color(0xFF2E7DD7), (ifValue / 1.2f).coerceIn(0f, 1f)))
+        }
+        if (w.trainingStressScore != null || w.caloriesKcal != null) {
             val tssTitle = if (w.caloriesSource == "HR" && w.normalizedPowerWatts == null) stringResource(R.string.analytics_hrtss) else stringResource(R.string.analytics_tss)
-            AnalyticsTile(
-                modifier = Modifier.weight(1f),
-                title = tssTitle,
-                value = w.trainingStressScore?.let { String.format(Locale.US, "%.0f", it) } ?: "--",
-                subtitle = recovery
-            )
-            AnalyticsTile(
-                modifier = Modifier.weight(1f),
-                title = stringResource(R.string.analytics_kcal),
-                value = w.caloriesKcal?.let { "$it kcal" } ?: "--",
-                subtitle = kcalLabel
-            )
+            add(LoadStat(tssTitle, String.format(Locale.US, "%.0f", tss), "", "", Icons.Filled.Timer, tssColor, (tss / 300f).coerceIn(0f, 1f)))
+        }
+        w.caloriesKcal?.let {
+            add(LoadStat(stringResource(R.string.analytics_kcal), "$it", "kcal", kcalLabel, Icons.Filled.Favorite, Color(0xFF7E57C2), (it / 1000f).coerceIn(0f, 1f)))
+        }
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        stats.chunked(2).forEach { rowItems ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                rowItems.forEach { s -> LoadTile(s, Modifier.weight(1f), palette) }
+                if (rowItems.size == 1) Spacer(Modifier.weight(1f))
+            }
+        }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .background(tssColor.copy(alpha = 0.10f), RoundedCornerShape(10.dp))
+                .border(1.dp, tssColor.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(recovery, color = tssColor, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
         }
     }
 }
 
 @Composable
-private fun AnalyticsTile(modifier: Modifier = Modifier, title: String, value: String, subtitle: String) {
-    val palette = LocalBikeUiPalette.current
-    Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(12.dp)) {
-        Column(Modifier.fillMaxWidth().border(1.dp, palette.border, RoundedCornerShape(12.dp)).padding(12.dp)) {
-            Text(title, color = palette.textSecondary, fontSize = 12.sp)
-            Text(value, color = palette.textPrimary, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-            if (subtitle.isNotBlank()) Text(subtitle, color = palette.textSecondary, fontSize = 11.sp, maxLines = 2)
+private fun LoadTile(stat: LoadStat, modifier: Modifier = Modifier, palette: com.example.bike_.ui.theme.BikeUiPalette) {
+    Card(modifier = modifier, colors = CardDefaults.cardColors(containerColor = palette.cardBg), shape = RoundedCornerShape(14.dp)) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .border(1.dp, stat.color.copy(alpha = 0.25f), RoundedCornerShape(14.dp))
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Box(Modifier.background(stat.color.copy(alpha = 0.13f), RoundedCornerShape(10.dp)).padding(7.dp)) {
+                Icon(stat.icon, contentDescription = null, tint = stat.color, modifier = Modifier.size(16.dp))
+            }
+            Column(Modifier.weight(1f)) {
+                Text(stat.title, color = palette.textSecondary, fontSize = 10.sp, maxLines = 1)
+                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Text(stat.value, color = stat.color, fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 1)
+                    if (stat.unit.isNotBlank()) Text(stat.unit, color = palette.textSecondary, fontSize = 10.sp, modifier = Modifier.padding(bottom = 2.dp))
+                }
+                Spacer(Modifier.height(4.dp))
+                Box(Modifier.fillMaxWidth().height(3.dp).background(palette.mutedBg, RoundedCornerShape(2.dp))) {
+                    Box(Modifier.fillMaxWidth(stat.progress.coerceIn(0f, 1f)).height(3.dp).background(stat.color, RoundedCornerShape(2.dp)))
+                }
+                if (stat.subtitle.isNotBlank()) {
+                    Spacer(Modifier.height(3.dp))
+                    Text(stat.subtitle, color = palette.textSecondary, fontSize = 9.sp, maxLines = 1)
+                }
+            }
         }
     }
 }
