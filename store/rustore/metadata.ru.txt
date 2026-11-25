@@ -26,14 +26,24 @@ E-mail поддержки: vikaweb@mail.ru
 • Подпись: APK Signature Scheme v2, алиас rustore-key, RSA 2048
 • Отпечаток сертификата SHA-256: F9:63:6E:52:3C:A4:7E:04:68:D6:CD:F5:0F:0E:8A:68:9A:FC:2D:81:E9:E7:89:EB:9C:87:CC:90:00:04:6B:35
 
-Скриншоты для консоли: docs/screenshots/
-• after_dashboard_full.png — экран данных с крупными плитками
-• after_mode_filter.png — разделение режимов (бег/ходьба)
-• after_computer.png — велокомпьютер во время тренировки
-• after_history_list.png — список тренировок
-• after_hero.png — шапка тренировки
-• after_analytics.png — зоны и аналитика нагрузки
-• after_max_power.png — максимальная мощность
-• before_trainer.jpg — для сравнения «было»
+Готовые файлы для загрузки: store/rustore/assets/
+
+Иконка:
+• icon_512.png — 512×512, PNG, ~99 КБ (1:1, до 1 МБ)
+
+Скриншоты для телефонов (9:16, 1080×1920, JPG, ~150 КБ):
+• phone_after_dashboard_full.jpg — экран данных с крупными плитками
+• phone_after_computer.jpg — велокомпьютер во время тренировки
+• phone_after_mode_filter.jpg — разделение режимов (бег/ходьба)
+• phone_after_history_list.jpg — список тренировок
+• phone_after_analytics.jpg — зоны и аналитика нагрузки
+• phone_after_max_power.jpg — максимальная мощность
+
+Скриншоты для планшетов (16:9, 1920×1080, JPG, ~200 КБ):
+• tablet_1.jpg — экран данных, тренировка, режим бега
+• tablet_2.jpg — история, зоны, максимальная мощность
+• tablet_3.jpg — шапка тренировки, велокомпьютер, режим бега
+
+Исходные скриншоты: docs/screenshots/
 
 APK для загрузки: https://github.com/acab1981-netizen/BikeGrid/releases/download/v1.0.10/BikeGrid-1.0.10-release.apk
