@@ -19,10 +19,10 @@ E-mail поддержки: vikaweb@mail.ru
 
 Технические данные:
 • Пакет: com.mybike.computer
-• Версия: 1.0.10 (versionCode 11)
+• Версия: 1.0.11 (versionCode 12)
 • Минимальная Android: 9 (API 28), targetSdk 35
-• Размер APK: 5 426 647 байт
-• SHA256: 08F2FEE7BB27D85AB6268785175E2F341F83E9CA1F48F5E91088A512CA47EEA3
+• Размер APK: 5 443 027 байт
+• SHA256: A60AB1BBEFBCA0D1849EFD1592AAF63F494DA42DA5360E6027388E56616EE821
 • Подпись: APK Signature Scheme v2, алиас rustore-key, RSA 2048
 • Отпечаток сертификата SHA-256: F9:63:6E:52:3C:A4:7E:04:68:D6:CD:F5:0F:0E:8A:68:9A:FC:2D:81:E9:E7:89:EB:9C:87:CC:90:00:04:6B:35
 
@@ -46,4 +46,4 @@ E-mail поддержки: vikaweb@mail.ru
 
 Исходные скриншоты: docs/screenshots/
 
-APK для загрузки: https://github.com/acab1981-netizen/BikeGrid/releases/download/v1.0.10/BikeGrid-1.0.10-release.apk
+APK для загрузки: https://github.com/acab1981-netizen/BikeGrid/releases/download/v1.0.11/BikeGrid-1.0.11-release.apk
