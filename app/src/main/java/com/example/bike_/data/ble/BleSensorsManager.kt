@@ -309,28 +309,30 @@ class BleSensorsManager(
     }
 
     private fun scheduleReconnectIfNeeded(session: DeviceSession) {
-        val shouldReconnect: Boolean
         synchronized(session) {
-            shouldReconnect = session.autoReconnect && !session.userInitiatedDisconnect && isBluetoothEnabled()
-            if (!shouldReconnect) return
-            session.state = BleConnectionState.CONNECTING
-            session.reconnectAttempts += 1
-            val delayMs = when {
-                session.reconnectAttempts <= 1 -> 2000L
-                session.reconnectAttempts <= 3 -> 5000L
-                else -> 10000L
-            }
-            val runnable = Runnable {
-                if (!session.userInitiatedDisconnect && session.autoReconnect && isBluetoothEnabled()) {
-                    connectGattInternal(session)
-                } else {
-                    synchronized(session) { session.state = BleConnectionState.DISCONNECTED }
-                    publishConnectionStatuses()
+            if (!session.autoReconnect || session.userInitiatedDisconnect || !isBluetoothEnabled()) return
+            val attempt = session.reconnectAttempts + 1
+            if (attempt > MAX_RECONNECT_ATTEMPTS) {
+                session.pendingReconnectRunnable?.let { mainHandler.removeCallbacks(it) }
+                session.pendingReconnectRunnable = null
+                session.state = BleConnectionState.DISCONNECTED
+            } else {
+                session.reconnectAttempts = attempt
+                session.state = BleConnectionState.CONNECTING
+                // Первая попытка — сразу, дальше по секунде, всего не больше 5.
+                val delayMs = if (attempt == 1) 0L else 1000L
+                val runnable = Runnable {
+                    if (!session.userInitiatedDisconnect && session.autoReconnect && isBluetoothEnabled()) {
+                        connectGattInternal(session)
+                    } else {
+                        synchronized(session) { session.state = BleConnectionState.DISCONNECTED }
+                        publishConnectionStatuses()
+                    }
                 }
+                session.pendingReconnectRunnable?.let { mainHandler.removeCallbacks(it) }
+                session.pendingReconnectRunnable = runnable
+                mainHandler.postDelayed(runnable, delayMs)
             }
-            session.pendingReconnectRunnable?.let { mainHandler.removeCallbacks(it) }
-            session.pendingReconnectRunnable = runnable
-            mainHandler.postDelayed(runnable, delayMs)
         }
         publishConnectionStatuses()
     }
@@ -887,5 +889,6 @@ class BleSensorsManager(
 
     companion object {
         private const val VALUE_STALE_MS = 5000L
+        private const val MAX_RECONNECT_ATTEMPTS = 5
     }
 }
