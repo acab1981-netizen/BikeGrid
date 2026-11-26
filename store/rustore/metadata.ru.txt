@@ -21,8 +21,8 @@ E-mail поддержки: vikaweb@mail.ru
 • Пакет: com.mybike.computer
 • Версия: 1.0.11 (versionCode 12)
 • Минимальная Android: 9 (API 28), targetSdk 35
-• Размер APK: 5 443 027 байт
-• SHA256: A60AB1BBEFBCA0D1849EFD1592AAF63F494DA42DA5360E6027388E56616EE821
+• Размер APK: 5 426 643 байт
+• SHA256: B024D5D97F91F58D1395CC09D7B075781C103085C7996BF60DA43B9B591E87EE
 • Подпись: APK Signature Scheme v2, алиас rustore-key, RSA 2048
 • Отпечаток сертификата SHA-256: F9:63:6E:52:3C:A4:7E:04:68:D6:CD:F5:0F:0E:8A:68:9A:FC:2D:81:E9:E7:89:EB:9C:87:CC:90:00:04:6B:35
 
